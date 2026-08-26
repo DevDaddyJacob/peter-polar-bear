@@ -36,9 +36,6 @@
 			],
 			"@/error/*": [
 				"./src/component/error/*"
-			],
-			"@/gitlab/*": [
-				"./src/component/gitlab/*"
 			]
 		},
 
