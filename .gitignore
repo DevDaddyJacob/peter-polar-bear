@@ -1,0 +1,14 @@
+build/
+errors/
+logs/
+dist/
+node_modules/
+
+.env*
+*.cpuprofile
+*.heapprofile
+*.heapsnapshot
+google-auth.json
+
+!.env.example
+!**/.gitkeep

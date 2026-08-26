@@ -1,0 +1,112 @@
+{
+    "search.exclude": {
+        "**/.vscode": true,
+        "**/assets": true,
+        "**/dist": true,
+        "**/logs": true,
+        "**/package-lock.json": true
+    },
+    
+    "editor.rulers": [
+        { "column": 80, "color": "#adb5bd0d" },
+        { "column": 90, "color": "#adb5bd80" },
+        { "column": 100, "color": "#ef233c80" },
+    ],
+
+    "files.eol": "\n",
+
+    // Todo Tree Config
+    "todo-tree.general.showActivityBarBadge": true,
+    "todo-tree.general.statusBar": "tags",
+    "todo-tree.tree.groupedByTag": true,
+    "todo-tree.filtering.includeHiddenFiles": true,
+    "todo-tree.tree.showBadges": false,
+    "todo-tree.tree.disableCompactFolders": false,
+    "todo-tree.tree.showCountsInTree": true,
+    "todo-tree.tree.scanMode": "workspace only",
+    "todo-tree.general.rootFolder": "${workspaceFolder}/src",
+    "todo-tree.tree.expanded": true,
+    "todo-tree.general.tags": [
+        "TODO",
+        "UPDATE",
+        "FINISH",
+
+        "DOCS",
+        "ADD DOCS",
+        "DOCUMENT",
+        "ADD DOCUMENT",
+        "DOCUMENTATION",
+        "ADD DOCUMENTATION",
+
+        "BUG",
+        "FIXME",
+
+        "HACK",
+        "WORKAROUND",
+        "WORKS ON MY MACHINE",
+        "I DONT WANT TO TALK ABOUT IT",
+        "SOMEHOW WORKS",
+    ],
+    "todo-tree.general.tagGroups": {
+        "TODO": [
+            "TODO",
+            "UPDATE",
+            "FINISH",
+        ],
+        "DOCS": [
+            "DOCS",
+            "ADD DOCS",
+            "DOCUMENT",
+            "ADD DOCUMENT",
+            "DOCUMENTATION",
+            "ADD DOCUMENTATION",
+        ],
+        "BUG": [
+            "BUG",
+            "FIXME"
+        ],
+        "HACK": [
+            "HACK",
+            "WORKAROUND",
+            "WORKS ON MY MACHINE",
+            "I DONT WANT TO TALK ABOUT IT",
+            "SOMEHOW WORKS"
+        ]
+    },
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "icon": "bookmark",
+            "iconColour": "#70e000",
+            "background": "#70e000",
+            "foreground": "#f8f9fa",
+        },
+        "DOCS": {
+            "icon": "book",
+            "iconColour": "#0096c7",
+            "background": "#0096c7",
+            "foreground": "#f8f9fa",
+        },
+        "BUG": {
+            "icon": "bug",
+            "iconColour": "#fb8500",
+            "background": "#fb8500",
+            "foreground": "#f8f9fa",
+        },
+        "HACK": {
+            "icon": "flame",
+            "iconColour": "#c1121f",
+            "background": "#c1121f",
+            "foreground": "#f8f9fa",
+        }
+    },
+    
+    "[json]": {
+        "editor.rulers": []
+    },
+
+    "js/ts.preferences.importModuleSpecifier": "non-relative",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.biome": "explicit",
+        // "source.fixAll.biome": "explicit"
+    }
+}

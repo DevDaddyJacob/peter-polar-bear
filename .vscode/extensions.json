@@ -1,0 +1,22 @@
+{
+    "recommendations": [
+        // Hard recommendations
+        "biomejs.biome",
+        "gruntfuggly.todo-tree",
+        "esbenp.prettier-vscode",
+        "yoavbls.pretty-ts-errors",
+        "kisstkondoros.typelens",
+        "usernamehw.errorlens",
+        "christian-kohler.path-intellisense",
+        
+        // Preference recommendations
+        "dzhavat.bracket-pair-toggler",
+        "chekweitan.compare-view",
+        "leonardssh.vscord",
+        "dracula-theme.theme-dracula",
+        "eamodio.gitlens",
+        "shd101wyy.markdown-preview-enhanced",
+        "pkief.material-icon-theme",
+        "vscode-icons-team.vscode-icons",
+    ]
+}

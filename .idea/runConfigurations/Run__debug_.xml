@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run (debug)" type="BunRunConfiguration">
+    <option name="program" value="src/index.ts" />
+    <option name="runtimeParameters" value="--define APP_VERSION='&quot;0.0.0-dev&quot;' --define BUILD_TIMESTAMP='&quot;2003-05-31T00:00:00Z&quot;' --define GIT_COMMIT_HASH='&quot;e9501a252b778bce5a3d77710667afdd9198a750d1d989d95fb32d80e485bf15&quot;' --define APP_ENV='&quot;development&quot;'" />
+    <option name="workingDirectory" value="$PROJECT_DIR$" />
+    <envs>
+      <env name="LOG_LEVEL" value="debug" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>

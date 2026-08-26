@@ -1,0 +1,258 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"includes": [
+			"./src/**/*",
+			"./biome.json",
+			"./codegen.ts",
+			"./compile.ts",
+			"./compile.json",
+			"./package.json",
+			"./tsconfig.json",
+			"!**/src/codegen/**/*"
+		]
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "none",
+			"a11y": "off",
+			"complexity": {
+				"noArguments": "warn",
+				"noBannedTypes": "warn",
+				"noCommaOperator": "warn",
+				"noEmptyTypeParameters": "warn",
+				"noExcessiveCognitiveComplexity": {
+					"level": "info",
+					"options": {
+						"maxAllowedComplexity": 15
+					}
+				},
+				"noExtraBooleanCast": "warn",
+				"noFlatMapIdentity": "warn",
+				"noImplicitCoercions": "warn",
+				"noStaticOnlyClass": "warn",
+				"noThisInStatic": "warn",
+				"noUselessCatch": "info",
+				"noUselessCatchBinding": "info",
+				"noUselessConstructor": "info",
+				"noUselessContinue": "info",
+				"noUselessEmptyExport": "info",
+				"noUselessEscapeInRegex": "info",
+				"noUselessFragments": "info",
+				"noUselessLabel": "info",
+				"noUselessLoneBlockStatements": "info",
+				"noUselessRename": "info",
+				"noUselessReturn": "info",
+				"noUselessStringConcat": "info",
+				"noUselessStringRaw": "info",
+				"noUselessSwitchCase": "info",
+				"noUselessTernary": "info",
+				"noUselessThisAlias": "info",
+				"noUselessTypeConstraint": "info",
+				"noUselessUndefined": "off",
+				"noUselessUndefinedInitialization": "info",
+				"useArrayFind": "info",
+				"useArrowFunction": "warn",
+				"useDateNow": "warn",
+				"useFlatMap": "info",
+				"useIndexOf": "info",
+				"useLiteralKeys": "info",
+				"useNumericLiterals": "warn",
+				"useOptionalChain": "warn",
+				"useRegexLiterals": "warn",
+				"useSimpleNumberKeys": "warn",
+				"useSimplifiedLogicExpression": "info",
+				"useWhile": "warn"
+			},
+			"correctness": {
+				"noConstAssign": "error",
+				"noConstantCondition": "error",
+				"noConstantMathMinMaxClamp": "error",
+				"noConstructorReturn": "error",
+				"noEmptyCharacterClassInRegex": "error",
+				"noEmptyPattern": "error",
+				"noInnerDeclarations": "error",
+				"noUnreachable": "info",
+				"noUnusedImports": {
+					"level": "warn",
+					"fix": "safe"
+				},
+				"useIsNan": "error",
+				"useValidTypeof": "error",
+				"useValidForDirection": "error"
+			},
+			"nursery": "off",
+			"performance": {
+				"noAwaitInLoops": "info",
+				"noDelete": "warn",
+				"noAccumulatingSpread": "warn"
+			},
+			"security": "off",
+			"style": {
+				"noEnum": "warn",
+				"useErrorCause": "info",
+				"useObjectSpread": "info",
+				"noMagicNumbers": "off",
+				"noMultiAssign": "error",
+				"noNestedTernary": "info",
+				"noNonNullAssertion": "error",
+				"noTernary": "info",
+				"noUselessElse": "info",
+				"useAtIndex": "info",
+				"useAsConstAssertion": "info",
+				"noYodaExpression": "off",
+				"useBlockStatements": "error",
+				"useCollapsedElseIf": "info",
+				"useCollapsedIf": "info",
+				"useConsistentArrayType": "info",
+				"useConst": "warn",
+				"useExportType": "warn",
+				"useForOf": "info",
+				"useShorthandAssign": "info",
+				"useTemplate": "info",
+				"useThrowNewError": "error",
+				"useThrowOnlyError": "error",
+				"useNodejsImportProtocol": {
+					"level": "error",
+					"fix": "safe"
+				},
+				"useImportType": {
+					"level": "info",
+					"options": {
+						"style": "separatedType"
+					}
+				}
+			},
+			"suspicious": {
+				"useIsArray": "error",
+				"noGlobalIsNan": "error",
+				"noGlobalIsFinite": "error",
+				"noImplicitAnyLet": "error",
+				"noFallthroughSwitchClause": "warn",
+				"noExplicitAny": "error",
+				"noEqualsToNull": "error",
+				"noEmptyBlockStatements": "info",
+				"noEmptyInterface": "warn",
+				"noDuplicateParameters": "error",
+				"noDuplicateObjectKeys": "error",
+				"noDuplicateElseIf": "warn",
+				"noDuplicateClassMembers": "error",
+				"noDuplicateCase": "warn",
+				"noDoubleEquals": "error",
+				"noCompareNegZero": "error",
+				"noAsyncPromiseExecutor": "warn",
+				"noCatchAssign": "warn",
+				"noAssignInExpressions": "warn",
+				"noApproximativeNumericConstant": "error",
+				"noAlert": "error",
+				"useGuardForIn": "info",
+				"useGetterReturn": "error",
+				"useErrorMessage": "warn",
+				"useAwait": "warn",
+				"noWith": "error",
+				"noVar": "error",
+				"noSparseArray": "error",
+				"noSelfCompare": "warn",
+				"noReturnAssign": "error"
+			}
+		}
+	},
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": false,
+		"indentStyle": "tab",
+		"indentWidth": 2,
+		"lineEnding": "crlf",
+		"lineWidth": 90,
+		"attributePosition": "auto",
+		"bracketSameLine": false,
+		"bracketSpacing": true,
+		"expand": "auto",
+		"useEditorconfig": true
+	},
+	"javascript": {
+		"formatter": {
+			"jsxQuoteStyle": "single",
+			"quoteProperties": "asNeeded",
+			"trailingCommas": "none",
+			"semicolons": "always",
+			"arrowParentheses": "asNeeded",
+			"bracketSameLine": false,
+			"quoteStyle": "double",
+			"attributePosition": "auto",
+			"bracketSpacing": true
+		}
+	},
+	"json": {
+		"formatter": {
+			"expand": "always"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": {
+					"level": "on",
+					"options": {
+						"identifierOrder": "natural",
+						"groups": [
+							{
+								"type": true,
+								"source": [
+									":NODE:",
+									":BUN:"
+								]
+							},
+							{
+								"type": true,
+								"source": [
+									":PACKAGE:",
+									"!@/**"
+								]
+							},
+							{
+								"type": true,
+								"source": "@/**"
+							},
+							{
+								"type": true,
+								"source": "..."
+							},
+							":BLANK_LINE:",
+							[
+								":NODE:",
+								":BUN:"
+							],
+							[
+								":PACKAGE:",
+								"!@/**"
+							],
+							"@/**",
+							"..."
+						]
+					}
+				}
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": [
+				"./tsconfig.json"
+			],
+			"json": {
+				"parser": {
+					"allowComments": true
+				}
+			}
+		}
+	]
+}
