@@ -100,24 +100,9 @@ export const Colours = {
 		BLUE: GroupedGenerics.BLUES.BLUE_DAMSELFLY
 	},
 
-	VOTING: {
-		ACTIVE: GroupedGenerics.GREENS.ALARMING_SLIME,
-		CLOSED: GroupedGenerics.REDS.BLOOD_BURST,
-		APPROVED: GroupedGenerics.YELLOWS.EGG_TOAST,
-		DENIED: GroupedGenerics.REDS.RED_BIRCH
-	},
-
 	BOT: {
-		// BRANDING: GroupedGenerics.PURPLES.LIBERAL_LILAC,
-		BRANDING: GroupedGenerics.ORANGES.ORANGE_GLUTTONY,
+		BRANDING: GroupedGenerics.PURPLES.LIBERAL_LILAC,
 		ERROR: GroupedGenerics.REDS.BLOOD_BURST,
 		WARNING: GroupedGenerics.YELLOWS.BASKET_OF_GOLD,
-
-		BCSO_BLUE: GroupedGenerics.BLUES.DAYFLOWER,
-		WSU_RED: GroupedGenerics.REDS.MANDARIN_RED,
-		WLR_GREEN: GroupedGenerics.GREENS.VERDANT_OASIS,
-		CID_BLUE: GroupedGenerics.BLUES.STARRY_NIGHT,
-		TED_YELLOW: GroupedGenerics.YELLOWS.FLOWEY_YELLOW,
-		K9_BLUE: GroupedGenerics.BLUES.RHAPSODY_IN_BLUE
 	}
 } as const;

@@ -99,19 +99,23 @@ async function recordToFile<T extends Error>(
 	lines.push(`========== ${new Date().toISOString()} - ${uuid} ==========`);
 	lines.push(`\n===== FULL STACK TRACE =====`);
 	lines.push(getDeepStackTrace(error));
-	lines.push(`\n===== ERROR LOCATION =====`);
 
-	const stackLines = readErrorStackDetails(error, { useRelativePath: false });
-	let errorLocation: string | null = null;
-	for (const stackLine of stackLines) {
-		// biome-ignore lint/performance/noAwaitInLoops: -
-		errorLocation = await getErrorLocation(stackLine);
-		if (errorLocation !== null) {
-			break;
+	if ("disabled" !== ERROR_ENV_CONFIG.locationResolution) {
+		lines.push(`\n===== ERROR LOCATION =====`);
+		const stackLines = readErrorStackDetails(error, { useRelativePath: false });
+
+		let errorLocation: string | null = null;
+		for (const stackLine of stackLines) {
+			// biome-ignore lint/performance/noAwaitInLoops: -
+			errorLocation = await getErrorLocation(stackLine);
+			if (errorLocation !== null) {
+				break;
+			}
 		}
+
+		lines.push(`${errorLocation}`);
 	}
 
-	lines.push(`${errorLocation}`);
 	lines.push(`\n===== REPORT OPTIONS =====`);
 	lines.push(jsonStringify(opts, jsonReplacer, 4));
 

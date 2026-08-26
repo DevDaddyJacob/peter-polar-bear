@@ -1,4 +1,5 @@
 export class Lazy<T> {
+	// noinspection JSPrimitiveTypeWrapperUsage
 	private static readonly NON_INITIALIZED = new Object();
 
 	public static of<T>(initializer: () => T) {
@@ -33,6 +34,7 @@ export class Lazy<T> {
 }
 
 export class LazyAsync<T> {
+	// noinspection JSPrimitiveTypeWrapperUsage
 	private static readonly NON_INITIALIZED = new Object();
 
 	public static of<T>(initializer: () => Promise<T>) {

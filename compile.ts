@@ -34,7 +34,7 @@ await Bun.build({
 	entrypoints: ["./src/index.ts"],
 	compile: {
 		target: "bun-linux-x64",
-		outfile: "./build/deputron"
+		outfile: "./build/peter-polar-bear"
 	},
 	define: {
 		APP_ENV: JSON.stringify(appEnv),

@@ -47,11 +47,7 @@ const CommandEval = new SlashSubCommand(
 		]
 	},
 	async function (this, interaction) {
-		if (
-			"194201083738980353" !== interaction.user.id && // Jacob
-			"216956540211560448" !== interaction.user.id && // Liam
-			"408885161724215296" !== interaction.user.id // Mazen
-		) {
+		if ("194201083738980353" !== interaction.user.id) {
 			await interaction.reply({
 				content: "You cannot use this command.",
 				flags: "Ephemeral"
