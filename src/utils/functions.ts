@@ -1,10 +1,7 @@
-import type { GuildBasedChannel, PartialGuildMember } from "discord.js";
 import type { NonEmptyArray } from "@/utils/types";
 
 import { access, lstat, mkdir, readdir } from "node:fs/promises";
 import { join } from "node:path";
-import { GuildMember, Role, User } from "discord.js";
-import { DiscordFormatting } from "@/utils/discordFormatting.ts";
 
 export function assert<T>(condition: T, message?: string): asserts condition {
 	if (!condition) {
@@ -123,31 +120,4 @@ export async function ensureFolderExists(path: string) {
 	if (!folderExists) {
 		await mkdir(path, { recursive: true });
 	}
-}
-
-export function toLogFormat(
-	item: User | GuildMember | PartialGuildMember | GuildBasedChannel | Role,
-	mention: boolean = false
-): string {
-	if (item instanceof User || item instanceof GuildMember || "user" in item) {
-		if (mention) {
-			return `${DiscordFormatting.User(item)} (${item.id} | ${item.displayName})`;
-		}
-
-		return `${item.displayName} (${item.id})`;
-	}
-
-	if (item instanceof Role) {
-		if (mention) {
-			return `${DiscordFormatting.Role(item)} (${item.id} | ${item.name})`;
-		}
-
-		return `${item.name} (${item.id})`;
-	}
-
-	if (mention) {
-		return `${DiscordFormatting.Channel(item)} (${item.id} | ${item.name})`;
-	}
-
-	return `${item.name} (${item.id})`;
 }

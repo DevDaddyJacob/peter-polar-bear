@@ -1,8 +1,15 @@
-import type { BaseInteraction, BaseMessageOptions, Message } from "discord.js";
+import type {
+	BaseInteraction,
+	BaseMessageOptions,
+	GuildBasedChannel,
+	Message,
+	PartialGuildMember
+} from "discord.js";
 import type { Awaitable } from "@/utils/awaitable.ts";
 import type { Failable } from "@/utils/types.ts";
 
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, Role, User } from "discord.js";
+import { DF } from "@/utils/discordFormatting.ts";
 
 export async function tryReplyToInteraction(
 	interaction: BaseInteraction,
@@ -99,4 +106,31 @@ export function getFullCommandName(interaction: BaseInteraction) {
 	}
 
 	return interaction.id;
+}
+
+export function toLogFormat(
+	item: User | GuildMember | PartialGuildMember | GuildBasedChannel | Role,
+	mention: boolean = false
+): string {
+	if (item instanceof User || item instanceof GuildMember || "user" in item) {
+		if (mention) {
+			return `${DF.U(item)} (${item.id} | ${item.displayName})`;
+		}
+
+		return `${item.displayName} (${item.id})`;
+	}
+
+	if (item instanceof Role) {
+		if (mention) {
+			return `${DF.R(item)} (${item.id} | ${item.name})`;
+		}
+
+		return `${item.name} (${item.id})`;
+	}
+
+	if (mention) {
+		return `${DF.CH(item)} (${item.id} | ${item.name})`;
+	}
+
+	return `${item.name} (${item.id})`;
 }

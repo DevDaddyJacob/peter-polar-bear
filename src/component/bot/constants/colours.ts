@@ -103,6 +103,6 @@ export const Colours = {
 	BOT: {
 		BRANDING: GroupedGenerics.PURPLES.LIBERAL_LILAC,
 		ERROR: GroupedGenerics.REDS.BLOOD_BURST,
-		WARNING: GroupedGenerics.YELLOWS.BASKET_OF_GOLD,
+		WARNING: GroupedGenerics.YELLOWS.BASKET_OF_GOLD
 	}
 } as const;

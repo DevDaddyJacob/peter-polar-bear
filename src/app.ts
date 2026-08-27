@@ -6,7 +6,7 @@ import { TraceInvocationAsync } from "@/utils/decorators.ts";
 import { toErrorString } from "@/utils/functions.ts";
 
 export class Application {
-	private discordBot: PeterPolarBearBot;
+	public readonly discordBot: PeterPolarBearBot;
 
 	public constructor() {
 		this.discordBot = new PeterPolarBearBot({

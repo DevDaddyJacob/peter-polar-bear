@@ -5,11 +5,10 @@ import type { Awaitable } from "@/utils/awaitable.ts";
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
 import { MessageFlagsBitField } from "discord.js";
-import { getFullCommandName } from "@/bot/utils.ts";
+import { getFullCommandName, toLogFormat } from "@/bot/utils.ts";
 import { ERROR_ENV_CONFIG } from "@/error/config.ts";
 import { parseOptions } from "@/error/report.ts";
 import { DiscordFormatting } from "@/utils/discordFormatting.ts";
-import { toLogFormat } from "@/utils/functions.ts";
 import { UnixTime } from "@/utils/unixTime.ts";
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: fix this

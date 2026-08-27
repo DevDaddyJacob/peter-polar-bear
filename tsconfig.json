@@ -13,6 +13,9 @@
 			"bun"
 		],
 		"paths": {
+			"@": [
+				"./src/index.ts"
+			],
 			"@/app": [
 				"./src/app.ts"
 			],

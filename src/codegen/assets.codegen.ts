@@ -5,17 +5,21 @@
 // biome-ignore-all format
 
 import _a0 from "../../assets/.banner" with { type: "file" };
-import _a1 from "../../assets/emojis/crossBox.png" with { type: "file" };
-import _a2 from "../../assets/emojis/loading.gif" with { type: "file" };
-import _a3 from "../../assets/errorIcon.png" with { type: "file" };
-import _a4 from "../../assets/warningIcon.png" with { type: "file" };
+import _a1 from "../../assets/botAvatar.png" with { type: "file" };
+import _a2 from "../../assets/discordIcon.png" with { type: "file" };
+import _a3 from "../../assets/emojis/crossBox.png" with { type: "file" };
+import _a4 from "../../assets/emojis/loading.gif" with { type: "file" };
+import _a5 from "../../assets/errorIcon.png" with { type: "file" };
+import _a6 from "../../assets/warningIcon.png" with { type: "file" };
 
 export const assets = {
 	".banner": _a0,
-	"emojis/crossBox.png": _a1,
-	"emojis/loading.gif": _a2,
-	"errorIcon.png": _a3,
-	"warningIcon.png": _a4,
+	"botAvatar.png": _a1,
+	"discordIcon.png": _a2,
+	"emojis/crossBox.png": _a3,
+	"emojis/loading.gif": _a4,
+	"errorIcon.png": _a5,
+	"warningIcon.png": _a6,
 } as const;
 
 export type AssetName = keyof typeof assets;

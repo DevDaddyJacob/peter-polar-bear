@@ -19,11 +19,15 @@ export class Attachments {
 	public static readonly Files = {
 		ERROR_ICON: "errorIcon.png",
 		WARNING_ICON: "warningIcon.png",
+		BOT_AVATAR: "botAvatar.png",
+		DISCORD_ICON: "discordIcon.png"
 	} as const;
 
 	public static readonly URLs = {
 		ERROR_ICON: Attachments.makeUrl(Attachments.Files.ERROR_ICON),
 		WARNING_ICON: Attachments.makeUrl(Attachments.Files.WARNING_ICON),
+		BOT_AVATAR: Attachments.makeUrl(Attachments.Files.BOT_AVATAR),
+		DISCORD_ICON: Attachments.makeUrl(Attachments.Files.DISCORD_ICON)
 	} as const;
 
 	public static get ERROR_ICON(): AttachmentPayload {
@@ -32,6 +36,14 @@ export class Attachments {
 
 	public static get WARNING_ICON(): AttachmentPayload {
 		return Attachments.getCachedPayload("WARNING_ICON");
+	}
+
+	public static get BOT_AVATAR(): AttachmentPayload {
+		return Attachments.getCachedPayload("BOT_AVATAR");
+	}
+
+	public static get DISCORD_ICON(): AttachmentPayload {
+		return Attachments.getCachedPayload("DISCORD_ICON");
 	}
 
 	private static getCachedStream(key: AttachmentFiles): BufferResolvable {

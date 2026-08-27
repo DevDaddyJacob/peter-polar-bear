@@ -6,19 +6,27 @@ import type {
 	ChatInputCommandInteraction,
 	ClientOptions,
 	ContextMenuCommandInteraction,
+	Guild,
 	InteractionReplyOptions,
 	MentionableSelectMenuInteraction,
 	MessageContextMenuCommandInteraction,
 	ModalSubmitInteraction,
 	RoleSelectMenuInteraction,
+	Snowflake,
 	StringSelectMenuInteraction,
+	TextChannel,
 	UserContextMenuCommandInteraction,
 	UserSelectMenuInteraction
 } from "discord.js";
 import type { Awaitable } from "@/utils/awaitable.ts";
 
+import { Channels } from "@/bot/constants/channels.ts";
 import { CommandErrorEmbed, CustomErrorEmbed } from "@/bot/constants/embeds.ts";
 import { CommandDev } from "@/bot/modules/devCommand.ts";
+import {
+	GettingStartedButton,
+	periodicGettingStartedScan
+} from "@/bot/modules/gettingStartedModule.ts";
 import { getFullCommandName, tryReplyToInteraction } from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
 import { BotClient } from "@/lib/bot/botClient.ts";
@@ -31,12 +39,43 @@ import { StringSelectMenu } from "@/lib/bot/selectMenus/stringSelectMenu.ts";
 import { UserSelectMenu } from "@/lib/bot/selectMenus/userSelectMenu.ts";
 import { botLogger } from "@/modules/loggingModule.ts";
 import { assert } from "@/utils/functions.ts";
+import { LazyAsync } from "@/utils/lazy.ts";
+import { periodicRulesAndInfoRefresh } from "@/bot/modules/ruleAndInfoModule.ts";
 
 export class PeterPolarBearBot extends BotClient {
+	private static readonly IGLOO_GUILD_ID: Snowflake = "1239027847918653470";
+
+	public readonly iglooGuild: LazyAsync<Guild>;
+
 	constructor(options: ClientOptions) {
 		super(options);
 
+		this.iglooGuild = LazyAsync.of(async () =>
+			this.guilds.fetch(PeterPolarBearBot.IGLOO_GUILD_ID)
+		);
+
+		this.addButton(GettingStartedButton);
+
 		this.addCommandInternal(CommandDev);
+	}
+
+	public async discordLog(
+		payload: Parameters<TextChannel["send"]>[0]
+	): ReturnType<TextChannel["send"]> {
+		const guild = await this.iglooGuild.get();
+		const channel = await guild.channels.fetch(Channels.LOGS_ALERTS);
+		assert(null !== channel);
+		assert(channel.isTextBased());
+
+		return await channel.send(payload);
+	}
+
+	protected override async onReady() {
+		await periodicGettingStartedScan();
+		setInterval(periodicGettingStartedScan, 5 * 60 * 1000);
+
+		await periodicRulesAndInfoRefresh();
+		setInterval(periodicRulesAndInfoRefresh, 15 * 60 * 1000);
 	}
 
 	protected override async handleInteractionError(

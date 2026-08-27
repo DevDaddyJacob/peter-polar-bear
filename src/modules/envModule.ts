@@ -44,5 +44,5 @@ export const env = validate({
 			.default([])
 	},
 
-	DISCORD_TOKEN: z.string().default("N/A"),
+	DISCORD_TOKEN: z.string().default("N/A")
 });

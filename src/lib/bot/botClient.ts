@@ -42,6 +42,8 @@ export abstract class BotClient extends Client {
 			await this.refreshCommands();
 
 			botLogger.info("Discord bot initialized and ready");
+
+			await this.onReady();
 		});
 	}
 
@@ -213,6 +215,10 @@ export abstract class BotClient extends Client {
 	}
 
 	protected async handleInteractionModalSubmit(i: ModalSubmitInteraction): Awaitable {
+		/* no-op */
+	}
+
+	protected async onReady(): Awaitable {
 		/* no-op */
 	}
 
