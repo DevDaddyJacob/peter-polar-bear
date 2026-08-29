@@ -41,6 +41,10 @@ import { botLogger } from "@/modules/loggingModule.ts";
 import { assert } from "@/utils/functions.ts";
 import { LazyAsync } from "@/utils/lazy.ts";
 import { periodicRulesAndInfoRefresh } from "@/bot/modules/ruleAndInfoModule.ts";
+import {
+	onEventHoneyPotMessage,
+	periodicHoneyPotRefresh
+} from "@/bot/modules/honeyPotModule.ts";
 
 export class PeterPolarBearBot extends BotClient {
 	private static readonly IGLOO_GUILD_ID: Snowflake = "1239027847918653470";
@@ -57,6 +61,8 @@ export class PeterPolarBearBot extends BotClient {
 		this.addButton(GettingStartedButton);
 
 		this.addCommandInternal(CommandDev);
+
+		this.on("messageCreate", onEventHoneyPotMessage.bind(this));
 	}
 
 	public async discordLog(
@@ -76,6 +82,9 @@ export class PeterPolarBearBot extends BotClient {
 
 		await periodicRulesAndInfoRefresh();
 		setInterval(periodicRulesAndInfoRefresh, 15 * 60 * 1000);
+
+		await periodicHoneyPotRefresh();
+		setInterval(periodicHoneyPotRefresh, 15 * 60 * 1000);
 	}
 
 	protected override async handleInteractionError(
