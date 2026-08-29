@@ -61,7 +61,7 @@ export async function onEventHoneyPotMessage(this: PeterPolarBearBot, message: M
 		assert(registryChannel.isTextBased());
 
 		await registryChannel.send(`${DiscordFormatting.Role(Roles.EXECUTIONERS_AUDIENCE)}\n`
-			+ `x1 honey pot victim (${toLogFormat(member)})`
+			+ `x1 honey pot victim: ${toLogFormat(member)}`
 		);
 	} catch (err) {
 		await errorReport(err as Error, {

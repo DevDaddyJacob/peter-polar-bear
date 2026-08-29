@@ -27,7 +27,11 @@ import {
 	GettingStartedButton,
 	periodicGettingStartedScan
 } from "@/bot/modules/gettingStartedModule.ts";
-import { getFullCommandName, tryReplyToInteraction } from "@/bot/utils.ts";
+import {
+	getFullCommandName,
+	tryReplyToInteraction,
+	wrapEventHandler
+} from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
 import { BotClient } from "@/lib/bot/botClient.ts";
 import { MessageCommand } from "@/lib/bot/commands/messageCommand.ts";
@@ -62,7 +66,10 @@ export class PeterPolarBearBot extends BotClient {
 
 		this.addCommandInternal(CommandDev);
 
-		this.on("messageCreate", onEventHoneyPotMessage.bind(this));
+		this.on(
+			"messageCreate",
+			this.wrapEventHandler("messageCreate", onEventHoneyPotMessage)
+		);
 	}
 
 	public async discordLog(
