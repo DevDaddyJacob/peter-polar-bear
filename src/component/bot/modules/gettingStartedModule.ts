@@ -29,7 +29,7 @@ class GettingStartedEmbed extends BaseEmbed {
 
 	constructor() {
 		const rulesChannel = DiscordFormatting.Channel(Channels.RULES);
-		const infoChannel = DiscordFormatting.Channel(Channels.RULES);
+		const infoChannel = DiscordFormatting.Channel(Channels.INFORMATION);
 
 		super({
 			title: "The Igloo Bouncer",
