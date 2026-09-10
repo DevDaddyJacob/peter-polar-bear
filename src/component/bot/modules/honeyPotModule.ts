@@ -1,15 +1,15 @@
 import type { Guild, Message } from "discord.js";
+import type { PeterPolarBearBot } from "@/bot/peterPolarBear.ts";
 import type { Awaitable } from "@/utils/awaitable.ts";
 
 import { ComponentType } from "discord.js";
 import { Channels } from "@/bot/constants/channels.ts";
-import { errorReport } from "@/error/report.ts";
-import { assert } from "@/utils/functions.ts";
-import { app } from "@";
-import type { PeterPolarBearBot } from "@/bot/peterPolarBear.ts";
-import { DiscordFormatting } from "@/utils/discordFormatting.ts";
 import { Roles } from "@/bot/constants/roles.ts";
 import { toLogFormat } from "@/bot/utils.ts";
+import { errorReport } from "@/error/report.ts";
+import { DiscordFormatting } from "@/utils/discordFormatting.ts";
+import { assert } from "@/utils/functions.ts";
+import { app } from "@";
 
 async function ensureHoneyPotMessageExists(guild: Guild): Awaitable {
 	const channel = await guild.channels.fetch(Channels.HONEY_POT);
@@ -60,8 +60,9 @@ export async function onEventHoneyPotMessage(this: PeterPolarBearBot, message: M
 		assert(null !== registryChannel);
 		assert(registryChannel.isTextBased());
 
-		await registryChannel.send(`${DiscordFormatting.Role(Roles.EXECUTIONERS_AUDIENCE)}\n`
-			+ `x1 honey pot victim: ${toLogFormat(member)}`
+		await registryChannel.send(
+			`${DiscordFormatting.Role(Roles.EXECUTIONERS_AUDIENCE)}\n` +
+				`x1 honey pot victim: ${toLogFormat(member)}`
 		);
 	} catch (err) {
 		await errorReport(err as Error, {

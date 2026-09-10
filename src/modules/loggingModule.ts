@@ -215,4 +215,4 @@ function moduleLogger(moduleName: string) {
 export const appLogger = moduleLogger("Application");
 export const botLogger = moduleLogger("Discord");
 export const errorModuleLogger = moduleLogger("ErrorHandler");
-export const gitlabLogger = moduleLogger("GitLab");
+export const databaseLogger = moduleLogger("Database");

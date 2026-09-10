@@ -44,5 +44,14 @@ export const env = validate({
 			.default([])
 	},
 
-	DISCORD_TOKEN: z.string().default("N/A")
+	DISCORD_TOKEN: z.string().default("N/A"),
+
+	DATABASE: {
+		HOST: z.string().optional(),
+		PORT: z.number().positive().optional(),
+		DATABASE: z.string().optional(),
+		USER: z.string().optional(),
+		PASSWORD: z.string().optional(),
+		USE_SSL: z.boolean().default(false)
+	}
 });

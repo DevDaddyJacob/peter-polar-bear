@@ -28,10 +28,11 @@ import {
 	periodicGettingStartedScan
 } from "@/bot/modules/gettingStartedModule.ts";
 import {
-	getFullCommandName,
-	tryReplyToInteraction,
-	wrapEventHandler
-} from "@/bot/utils.ts";
+	onEventHoneyPotMessage,
+	periodicHoneyPotRefresh
+} from "@/bot/modules/honeyPotModule.ts";
+import { periodicRulesAndInfoRefresh } from "@/bot/modules/ruleAndInfoModule.ts";
+import { getFullCommandName, tryReplyToInteraction } from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
 import { BotClient } from "@/lib/bot/botClient.ts";
 import { MessageCommand } from "@/lib/bot/commands/messageCommand.ts";
@@ -44,11 +45,6 @@ import { UserSelectMenu } from "@/lib/bot/selectMenus/userSelectMenu.ts";
 import { botLogger } from "@/modules/loggingModule.ts";
 import { assert } from "@/utils/functions.ts";
 import { LazyAsync } from "@/utils/lazy.ts";
-import { periodicRulesAndInfoRefresh } from "@/bot/modules/ruleAndInfoModule.ts";
-import {
-	onEventHoneyPotMessage,
-	periodicHoneyPotRefresh
-} from "@/bot/modules/honeyPotModule.ts";
 
 export class PeterPolarBearBot extends BotClient {
 	private static readonly IGLOO_GUILD_ID: Snowflake = "1239027847918653470";

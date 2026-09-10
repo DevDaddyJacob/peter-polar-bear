@@ -1,6 +1,6 @@
 import type {
 	BaseInteraction,
-	BaseMessageOptions, ClientEvents,
+	BaseMessageOptions,
 	GuildBasedChannel,
 	Message,
 	PartialGuildMember

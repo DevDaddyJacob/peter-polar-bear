@@ -37,6 +37,9 @@
 			"@/bot/*": [
 				"./src/component/bot/*"
 			],
+			"@/db/*": [
+				"./src/component/db/*"
+			],
 			"@/error/*": [
 				"./src/component/error/*"
 			]

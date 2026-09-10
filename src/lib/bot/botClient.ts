@@ -2,7 +2,8 @@ import type {
 	AnySelectMenuInteraction,
 	BaseInteraction,
 	ButtonInteraction,
-	ChatInputCommandInteraction, ClientEvents,
+	ChatInputCommandInteraction,
+	ClientEvents,
 	ClientOptions,
 	ContextMenuCommandInteraction,
 	ModalSubmitInteraction
@@ -14,6 +15,7 @@ import type { SelectMenu } from "@/lib/bot/selectMenus/selectMenu.ts";
 import type { Awaitable, MaybeAwaitable } from "@/utils/awaitable.ts";
 
 import { Client, Collection, Routes } from "discord.js";
+import { errorReport } from "@/error/report.ts";
 import { MessageCommand } from "@/lib/bot/commands/messageCommand.ts";
 import { SingleSlashCommand } from "@/lib/bot/commands/singleSlashCommand.ts";
 import { SlashCommandGroup } from "@/lib/bot/commands/slashCommandGroup.ts";
@@ -22,7 +24,6 @@ import { SlashSubCommandGroup } from "@/lib/bot/commands/slashSubCommandGroup.ts
 import { UserCommand } from "@/lib/bot/commands/userCommand.ts";
 import { botLogger } from "@/modules/loggingModule";
 import { TraceInvocation, TraceInvocationAsync } from "@/utils/decorators.ts";
-import { errorReport } from "@/error/report.ts";
 import { jsonStringify } from "@/utils/stringify.ts";
 
 export abstract class BotClient extends Client {
@@ -122,8 +123,8 @@ export abstract class BotClient extends Client {
 	protected wrapEventHandler<E extends keyof ClientEvents>(
 		event: E,
 		func: (...args: ClientEvents[E]) => MaybeAwaitable
-	): ((...args: ClientEvents[E]) => Awaitable) {
-		return (async (...args: ClientEvents[E]) => {
+	): (...args: ClientEvents[E]) => Awaitable {
+		return async (...args: ClientEvents[E]) => {
 			try {
 				await func.bind(this)(...args);
 			} catch (err) {
@@ -134,7 +135,7 @@ export abstract class BotClient extends Client {
 					}
 				});
 			}
-		});
+		};
 	}
 
 	protected addCommandInternal(command: Command) {
