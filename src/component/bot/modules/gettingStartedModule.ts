@@ -1,11 +1,4 @@
-import type {
-	BaseMessageOptions,
-	ButtonInteraction,
-	Guild,
-	InteractionReplyOptions,
-	MessageCreateOptions,
-	Role
-} from "discord.js";
+import type { BaseMessageOptions, ButtonInteraction, Guild, Role } from "discord.js";
 import type { Awaitable } from "@/utils/awaitable.ts";
 
 import { ButtonStyle, ComponentType } from "discord.js";
@@ -13,6 +6,7 @@ import { Attachments } from "@/bot/constants/attachments.ts";
 import { Channels } from "@/bot/constants/channels.ts";
 import { BaseEmbed } from "@/bot/constants/embeds.ts";
 import { Roles } from "@/bot/constants/roles.ts";
+import { StaticMessage } from "@/bot/lib/staticMessage.ts";
 import { toLogFormat } from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
 import { Button } from "@/lib/bot/button.ts";
@@ -21,10 +15,8 @@ import { assert } from "@/utils/functions.ts";
 import { app } from "@";
 
 class GettingStartedEmbed extends BaseEmbed {
-	public static GetEmbedPayload<
-		T extends InteractionReplyOptions | MessageCreateOptions = InteractionReplyOptions
-	>(): T {
-		return new this().getPayload() as T;
+	public static GetEmbedPayload() {
+		return new this().getPayload();
 	}
 
 	constructor() {
@@ -45,18 +37,11 @@ class GettingStartedEmbed extends BaseEmbed {
 	}
 }
 
-async function ensureMessageExists(guild: Guild): Awaitable {
-	const channel = await guild.channels.fetch(Channels.GETTING_STARTED);
-	assert(null !== channel);
-	assert(channel.isTextBased());
-
-	const messages = await channel.messages.fetch({ limit: 100 });
-	if (0 !== messages.size) {
-		return;
-	}
-
-	const newMessage = await channel.send({
-		...GettingStartedEmbed.GetEmbedPayload<MessageCreateOptions>(),
+const gettingStartedStaticMessage = new StaticMessage(
+	"getting_started",
+	Channels.GETTING_STARTED,
+	{
+		...GettingStartedEmbed.GetEmbedPayload(),
 		components: [
 			{
 				type: ComponentType.ActionRow,
@@ -70,9 +55,15 @@ async function ensureMessageExists(guild: Guild): Awaitable {
 				]
 			}
 		]
-	});
+	}
+);
 
-	await newMessage.pin("Static message pin");
+async function ensureMessageExists(): Awaitable {
+	const message = await gettingStartedStaticMessage.update();
+
+	if (!message.pinned) {
+		await message.pin("Static message pin");
+	}
 }
 
 async function scanMemberRoles(guild: Guild): Awaitable {
@@ -147,7 +138,7 @@ export async function periodicGettingStartedScan(): Awaitable {
 
 	// Ensure the message exists
 	try {
-		await ensureMessageExists(guild);
+		await ensureMessageExists();
 	} catch (err) {
 		await errorReport(err as Error);
 	}

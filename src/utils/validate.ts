@@ -41,7 +41,14 @@ export function validate<T extends ValidatorScheme>(scheme: T): ValidatedObject<
 			}
 
 			const envKey = keyPathArr.join("_");
-			setNestedValue(validated, keyPathArr, value.parse(get(envKey)));
+
+			try {
+				const parsedValue = value.parse(get(envKey));
+				setNestedValue(validated, keyPathArr, parsedValue);
+			} catch (err) {
+				console.error(`Failed to parse environment variable with key "${envKey}"`);
+				throw err;
+			}
 		}
 	}
 

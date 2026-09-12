@@ -48,10 +48,13 @@ export const env = validate({
 
 	DATABASE: {
 		HOST: z.string().optional(),
-		PORT: z.number().positive().optional(),
+		PORT: z.coerce.number().positive().optional(),
 		DATABASE: z.string().optional(),
 		USER: z.string().optional(),
 		PASSWORD: z.string().optional(),
-		USE_SSL: z.boolean().default(false)
+		USE_SSL: z
+			.string()
+			.transform(val => "true" === val)
+			.default(false)
 	}
 });

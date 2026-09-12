@@ -32,7 +32,8 @@
 			"bunx --bun @biomejs/biome format --write --config-path=biome.json",
 			"echo ⋯Linting code…",
 			"bunx --bun @biomejs/biome lint --write --no-errors-on-unmatched --max-diagnostics=none --config-path=biome.json"
-		]
+		],
+		"migrations/**/*": []
 	},
 	"dependencies": {
 		"@googleapis/drive": "20.2.0",

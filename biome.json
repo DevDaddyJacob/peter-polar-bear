@@ -15,7 +15,8 @@
 			"./compile.json",
 			"./package.json",
 			"./tsconfig.json",
-			"!**/src/codegen/**/*"
+			"!**/src/codegen/**/*",
+			"!**/migrations/**/*"
 		]
 	},
 	"linter": {

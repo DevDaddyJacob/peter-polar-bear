@@ -1,3 +1,5 @@
+import type { MaybeAwaitable } from "@/utils/awaitable.ts";
+
 /**
  * Represents a conditional tuple return, where one element is always undefined.
  */
@@ -23,3 +25,5 @@ export type DeepPartial<T> = {
 export type ReverseMap<T extends Record<keyof T, keyof any>> = {
 	[K in keyof T as T[K]]: K;
 };
+
+export type MaybeSupplier<T> = T | (() => MaybeAwaitable<T>);

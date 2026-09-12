@@ -2,19 +2,23 @@ import { defineConfig } from "drizzle-kit";
 import { DATABASE_ENV_CONFIG } from "@/db/config.ts";
 import { assert } from "@/utils/functions.ts";
 
-assert(DATABASE_ENV_CONFIG.enabled);
+const getEnv = (key: string) => {
+	const val = process.env[key];
+	assert(undefined !== val);
+	return val;
+}
 
 export default defineConfig({
 	dialect: "postgresql",
-	schema: ".src/component/db/schema.ts",
+	schema: "./src/component/db/schema.ts",
 	out: "./migrations",
 	verbose: true,
 	dbCredentials: {
-		host: DATABASE_ENV_CONFIG.host,
-		port: DATABASE_ENV_CONFIG.port,
-		database: DATABASE_ENV_CONFIG.database,
-		user: DATABASE_ENV_CONFIG.user,
-		password: DATABASE_ENV_CONFIG.password,
-		ssl: DATABASE_ENV_CONFIG.useSSL,
+		host: getEnv("DATABASE_HOST"),
+		port: Number.parseInt(getEnv("DATABASE_PORT")),
+		database: getEnv("DATABASE_DATABASE"),
+		user: getEnv("DATABASE_USER"),
+		password: getEnv("DATABASE_PASSWORD"),
+		ssl: "true" === getEnv("DATABASE_USE_SSL"),
 	}
 });

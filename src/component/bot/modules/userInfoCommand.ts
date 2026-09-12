@@ -15,5 +15,7 @@ export const UserInfoCommand = new SingleSlashCommand(
 			}
 		]
 	},
-	async interaction => {}
+	async interaction => {
+		// no-op
+	}
 );
