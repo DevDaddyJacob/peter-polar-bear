@@ -13,6 +13,11 @@ import { assert } from "@/utils/functions.ts";
 import { app } from "@";
 
 const honeyPotStaticMessage = new StaticMessage("honey_pot", Channels.HONEY_POT, {
+	allowedMentions: {
+		parse: [],
+		roles: [],
+		users: []
+	},
 	flags: "IsComponentsV2",
 	components: [
 		{

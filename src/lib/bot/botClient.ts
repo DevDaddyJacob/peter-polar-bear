@@ -8,7 +8,7 @@ import type {
 	ContextMenuCommandInteraction,
 	ModalSubmitInteraction
 } from "discord.js";
-import type { Button } from "@/lib/bot/button.ts";
+import type { Button } from "@/lib/bot/buttons/button.ts";
 import type { Command } from "@/lib/bot/commands/command.ts";
 import type { Modal } from "@/lib/bot/modal.ts";
 import type { SelectMenu } from "@/lib/bot/selectMenus/selectMenu.ts";
@@ -210,6 +210,19 @@ export abstract class BotClient extends Client {
 			}
 
 			return subCmd;
+		}
+
+		return null;
+	}
+
+	@TraceInvocation(botLogger)
+	protected tryFindMatchingButton(interaction: ButtonInteraction): Button | null {
+		const id = interaction.customId;
+
+		const matchingButtons = this.buttons.find(b => b.doesIdMatch(id));
+
+		if (undefined !== matchingButtons) {
+			return matchingButtons;
 		}
 
 		return null;

@@ -53,8 +53,15 @@ export const env = validate({
 		USER: z.string().optional(),
 		PASSWORD: z.string().optional(),
 		USE_SSL: z
-			.string()
-			.transform(val => "true" === val)
-			.default(false)
+			.union([
+				z.undefined(),
+				z.literal("disable"),
+				z.literal("allow"),
+				z.literal("prefer"),
+				z.literal("require"),
+				z.literal("verify-ca"),
+				z.literal("verify-full")
+			])
+			.optional()
 	}
 });

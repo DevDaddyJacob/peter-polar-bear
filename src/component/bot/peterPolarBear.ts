@@ -31,6 +31,7 @@ import {
 	onEventHoneyPotMessage,
 	periodicHoneyPotRefresh
 } from "@/bot/modules/honeyPotModule.ts";
+import { CommandOffice, OfficeDirectoryNavButton } from "@/bot/modules/officeModule.ts";
 import { periodicRulesAndInfoRefresh } from "@/bot/modules/ruleAndInfoModule.ts";
 import { getFullCommandName, tryReplyToInteraction } from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
@@ -59,8 +60,10 @@ export class PeterPolarBearBot extends BotClient {
 		);
 
 		this.addButton(GettingStartedButton);
+		this.addButton(OfficeDirectoryNavButton);
 
 		this.addCommandInternal(CommandDev);
+		this.addCommandInternal(CommandOffice);
 
 		this.on(
 			"messageCreate",
@@ -231,13 +234,13 @@ export class PeterPolarBearBot extends BotClient {
 		interaction: ButtonInteraction
 	): Awaitable {
 		// Try to find the application command data for this interaction
-		const button = this.buttons.get(interaction.customId);
-		if (undefined === button) {
+		const button = this.tryFindMatchingButton(interaction);
+		if (null === button) {
 			const content: InteractionReplyOptions = {
 				...CustomErrorEmbed.GetCustomErrorEmbedPayload(
 					"Unknown Button",
 					`Your attempt to use the \`${interaction.customId}\` button ` +
-						"failed because there is no button registered with that id."
+						"failed because there is no buttons registered with that id."
 				),
 				flags: "Ephemeral"
 			};

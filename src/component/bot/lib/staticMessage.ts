@@ -30,7 +30,7 @@ export class StaticMessage {
 		}
 
 		if (existingMsg.channelId !== this.channelId) {
-			await db.delete(staticMessages).where(eq(staticMessages.name, this.name));
+			await db().delete(staticMessages).where(eq(staticMessages.name, this.name));
 			return this.create();
 		}
 
@@ -49,7 +49,7 @@ export class StaticMessage {
 
 		const message = await channel.send(await this.resolvePayload());
 
-		await db.insert(staticMessages).values({
+		await db().insert(staticMessages).values({
 			name: this.name,
 			guildId: guild.id,
 			channelId: channel.id,
@@ -68,7 +68,7 @@ export class StaticMessage {
 	}
 
 	private getDBEntry(): Awaitable<DBStaticMessage | undefined> {
-		return db.query.staticMessages.findFirst({
+		return db().query.staticMessages.findFirst({
 			where: {
 				name: this.name
 			}

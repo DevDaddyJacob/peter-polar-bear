@@ -10,6 +10,10 @@ export class Button {
 		this.id = id;
 		this.runnable = runnable;
 	}
+
+	public doesIdMatch(id: string): boolean {
+		return this.id === id;
+	}
 }
 
 export namespace Button {

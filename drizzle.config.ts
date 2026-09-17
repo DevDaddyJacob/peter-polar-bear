@@ -1,12 +1,31 @@
 import { defineConfig } from "drizzle-kit";
-import { DATABASE_ENV_CONFIG } from "@/db/config.ts";
 import { assert } from "@/utils/functions.ts";
+import { env } from "@/modules/envModule.ts";
+import { DATABASE_ENV_CONFIG } from "@/db/config.ts";
+import type { ConnectionOptions } from "node:tls";
 
-const getEnv = (key: string) => {
-	const val = process.env[key];
-	assert(undefined !== val);
-	return val;
-}
+type KitSSL =
+	| boolean
+	| "require"
+	| "allow"
+	| "prefer"
+	| "verify-full"
+	| ConnectionOptions
+	| undefined;
+
+assert(DATABASE_ENV_CONFIG.enabled);
+
+const toKitSSL = (mode: any): KitSSL => {
+	switch (mode) {
+		case "disable":
+			return false;
+		case "verify-ca":
+			// verify the CA chain, but skip hostname verification
+			return { rejectUnauthorized: true, checkServerIdentity: () => undefined };
+		default:
+			return mode;
+	}
+};
 
 export default defineConfig({
 	dialect: "postgresql",
@@ -14,11 +33,11 @@ export default defineConfig({
 	out: "./migrations",
 	verbose: true,
 	dbCredentials: {
-		host: getEnv("DATABASE_HOST"),
-		port: Number.parseInt(getEnv("DATABASE_PORT")),
-		database: getEnv("DATABASE_DATABASE"),
-		user: getEnv("DATABASE_USER"),
-		password: getEnv("DATABASE_PASSWORD"),
-		ssl: "true" === getEnv("DATABASE_USE_SSL"),
+		host: DATABASE_ENV_CONFIG.host,
+		port: DATABASE_ENV_CONFIG.port,
+		database: DATABASE_ENV_CONFIG.database,
+		user: DATABASE_ENV_CONFIG.user,
+		password: DATABASE_ENV_CONFIG.password,
+		ssl: toKitSSL(DATABASE_ENV_CONFIG.useSSL),
 	}
 });

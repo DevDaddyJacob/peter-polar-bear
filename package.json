@@ -9,14 +9,19 @@
 		"url": "git@github.com:DevDaddyJacob/peter-polar-bear.git"
 	},
 	"scripts": {
-		"check": "bunx --bun @biomejs/biome check --config-path=biome.json --max-diagnostics=none",
+		"prepare": "husky && bun codegen",
 		"codegen": "bun run codegen.ts",
 		"precompile": "bun codegen",
 		"compile": "bun run compile.ts",
-		"dev": "bun src/index.ts",
+		"check": "bunx --bun @biomejs/biome check --config-path=biome.json --max-diagnostics=none",
 		"format": "bunx --bun @biomejs/biome format --write --config-path=biome.json --max-diagnostics=none",
 		"lint": "bunx --bun @biomejs/biome lint --config-path=biome.json --max-diagnostics=none",
-		"prepare": "husky && bun codegen"
+		"db-generate": "bunx drizzle-kit generate",
+		"local-build": "docker compose build",
+		"local-reload": "docker compose up --detach --force-recreate",
+		"local-run": "docker compose up --detach --build",
+		"local-stop": "docker compose down",
+		"image": "docker build --file Dockerfile --tag peter-polar-bear-discord-bot ."
 	},
 	"lint-staged": {
 		"*.{js,ts}": [
@@ -49,7 +54,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.5.4",
-		"@types/bun": "1.3.14",
+		"@types/bun": "1.4.0",
 		"@types/pg": "8.23.1",
 		"drizzle-kit": "1.0.0-rc.4",
 		"husky": "9.1.7",
@@ -59,6 +64,6 @@
 		"typescript": "^5"
 	},
 	"engines": {
-		"bun": "1.3.14"
+		"bun": "1.4.0"
 	}
 }

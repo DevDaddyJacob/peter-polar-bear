@@ -33,9 +33,10 @@ console.log("Compiling...");
 await Bun.build({
 	entrypoints: ["./src/index.ts"],
 	compile: {
-		target: "bun-linux-x64",
-		outfile: "./build/peter-polar-bear"
+		target: "bun-linux-x64-musl",
+		outfile: `./build/peter-polar-bear-${appVersion}`
 	},
+	sourcemap: "linked",
 	define: {
 		APP_ENV: JSON.stringify(appEnv),
 		APP_VERSION: JSON.stringify(appVersion),

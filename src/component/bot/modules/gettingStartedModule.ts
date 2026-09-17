@@ -9,7 +9,7 @@ import { Roles } from "@/bot/constants/roles.ts";
 import { StaticMessage } from "@/bot/lib/staticMessage.ts";
 import { toLogFormat } from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
-import { Button } from "@/lib/bot/button.ts";
+import { Button } from "@/lib/bot/buttons/button.ts";
 import { DiscordFormatting } from "@/utils/discordFormatting.ts";
 import { assert } from "@/utils/functions.ts";
 import { app } from "@";
@@ -27,7 +27,7 @@ class GettingStartedEmbed extends BaseEmbed {
 			title: "The Igloo Bouncer",
 			description:
 				`Once you've read through ${rulesChannel} and ${infoChannel} ` +
-				"click the button attached to this message to get your additional roles!",
+				"click the buttons attached to this message to get your additional roles!",
 			thumbnail: { url: Attachments.URLs.DISCORD_ICON }
 		});
 	}
@@ -41,6 +41,11 @@ const gettingStartedStaticMessage = new StaticMessage(
 	"getting_started",
 	Channels.GETTING_STARTED,
 	{
+		allowedMentions: {
+			parse: [],
+			roles: [],
+			users: []
+		},
 		...GettingStartedEmbed.GetEmbedPayload(),
 		components: [
 			{

@@ -7,6 +7,11 @@ import { errorReport } from "@/error/report.ts";
 import { app } from "@";
 
 const infoStaticMessage = new StaticMessage("info", Channels.INFORMATION, {
+	allowedMentions: {
+		parse: [],
+		roles: [],
+		users: []
+	},
 	flags: "IsComponentsV2",
 	components: [
 		{

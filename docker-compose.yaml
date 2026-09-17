@@ -1,0 +1,63 @@
+name: peter-polar-bear
+
+services:
+    database:
+        container_name: ${COMPOSE_PROJECT_NAME}-database
+        image: postgres:18.6-alpine3.24
+        networks:
+            internal:
+                ipv4_address: 10.1.0.3
+        environment:
+            POSTGRES_DB: peter-polar-bear
+            POSTGRES_USER: peter-polar-bear
+            POSTGRES_PASSWORD: Risk4-Thrive-Linoleum-Uncivil-Frozen
+        ports: ["18227:5432"]
+        volumes:
+            - db-data:/var/lib/postgresql
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U peter-polar-bear -d peter-polar-bear" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    discord-bot:
+        container_name: ${COMPOSE_PROJECT_NAME}-discord-bot
+        depends_on:
+            database:
+                condition: service_healthy
+        build:
+            dockerfile: ./Dockerfile
+        env_file:
+            - path: ./.env
+              required: false
+        environment:
+            COLOUR_FORCE: true
+            LOG_LEVEL: info
+            DATABASE_HOST: database
+            DATABASE_PORT: 5432
+            DATABASE_DATABASE: peter-polar-bear
+            DATABASE_USER: peter-polar-bear
+            DATABASE_PASSWORD: Risk4-Thrive-Linoleum-Uncivil-Frozen
+            DATABASE_USE_SSL: disable
+        restart: on-failure:3
+        volumes:
+            - type: volume
+              source: logs-discord-bot
+              target: /app/logs
+        networks:
+            internal:
+                ipv4_address: 10.1.0.2
+
+networks:
+    internal:
+        name: ${COMPOSE_PROJECT_NAME}-net-internal
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.1.0.0/24
+
+volumes:
+    db-data:
+        name: ${COMPOSE_PROJECT_NAME}-vol-db-data
+    logs-discord-bot:
+        name: ${COMPOSE_PROJECT_NAME}-vol-logs-discord-bot

@@ -7,7 +7,14 @@ type TrueDatabaseEnvConfig = {
 	database: string;
 	user: string;
 	password: string;
-	useSSL: boolean;
+	useSSL:
+		| undefined
+		| "disable"
+		| "allow"
+		| "prefer"
+		| "require"
+		| "verify-ca"
+		| "verify-full";
 };
 
 type DatabaseEnvConfig = { enabled: false } | ({ enabled: true } & TrueDatabaseEnvConfig);

@@ -101,7 +101,9 @@ export interface RotatingSinkOptions {
 export function rotatingFileSink(opts: RotatingSinkOptions): {
 	write(line: string): void;
 } {
-	mkdirSync(opts.dir, { recursive: true });
+	if (!existsSync(opts.dir)) {
+		mkdirSync(opts.dir, { recursive: true });
+	}
 	const activePath = join(opts.dir, `${opts.base}${opts.ext}`);
 	const stagePath = join(opts.dir, `${opts.base}${opts.ext}.staged`);
 
