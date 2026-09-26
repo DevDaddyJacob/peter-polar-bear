@@ -1,13 +1,13 @@
 import type * as schema from "@/db/schema";
 
-export type NewDBUser = typeof schema.users.$inferInsert;
-export type DBUser = typeof schema.users.$inferSelect;
+export type NewDbUser = typeof schema.users.$inferInsert;
+export type DbUser = typeof schema.users.$inferSelect;
 
-export type NewDBStaticMessage = typeof schema.staticMessages.$inferInsert;
-export type DBStaticMessage = typeof schema.staticMessages.$inferSelect;
+export type NewDbStaticMessage = typeof schema.staticMessages.$inferInsert;
+export type DbStaticMessage = typeof schema.staticMessages.$inferSelect;
 
-export type NewDBOffice = typeof schema.offices.$inferInsert;
-export type DBOffice = typeof schema.offices.$inferSelect;
-export type DBFullOffice = DBOffice & {
-	owner: DBUser;
+export type NewDbOffice = typeof schema.offices.$inferInsert;
+export type DbOffice = typeof schema.offices.$inferSelect;
+export type DbFullOffice = DbOffice & {
+	owner: DbUser;
 };

@@ -1,15 +1,26 @@
-import type {
-	BaseInteraction,
-	BaseMessageOptions,
-	GuildBasedChannel,
-	Message,
-	PartialGuildMember
-} from "discord.js";
 import type { Awaitable } from "@/utils/awaitable.ts";
 import type { Failable } from "@/utils/types.ts";
-
-import { ChatInputCommandInteraction, GuildMember, Role, User } from "discord.js";
+import type {
+	AnySelectMenuInteraction,
+	BaseInteraction,
+	BaseMessageOptions,
+	ButtonInteraction,
+	ContextMenuCommandInteraction,
+	Guild,
+	GuildBasedChannel,
+	Message,
+	ModalSubmitInteraction,
+	PartialGuildMember,
+} from "discord.js";
+import {
+	AutocompleteInteraction,
+	ChatInputCommandInteraction,
+	GuildMember,
+	Role,
+	User
+} from "discord.js";
 import { DF } from "@/utils/discordFormatting.ts";
+import { app } from "@";
 
 export async function tryReplyToInteraction(
 	interaction: BaseInteraction,
@@ -81,7 +92,10 @@ export async function tryReplyToInteraction(
 }
 
 export function getFullCommandName(interaction: BaseInteraction) {
-	if (interaction instanceof ChatInputCommandInteraction) {
+	if (
+		interaction instanceof ChatInputCommandInteraction ||
+		interaction instanceof AutocompleteInteraction
+	) {
 		const parts = [interaction.commandName];
 
 		const subCmdGroup = interaction.options.getSubcommandGroup(false);
@@ -133,4 +147,59 @@ export function toLogFormat(
 	}
 
 	return `${item.name} (${item.id})`;
+}
+
+type AnyInteraction =
+	| ChatInputCommandInteraction
+	| ContextMenuCommandInteraction
+	| ButtonInteraction
+	| ModalSubmitInteraction
+	| AnySelectMenuInteraction;
+
+export function resolveGuild(interaction: AnyInteraction): Awaitable<Guild> {
+	if (null === interaction.guildId) {
+		throw new Error("Attempted to resolve guild for interaction without guild attached!");
+	}
+
+	return app.discordBot.guilds.fetch(interaction.guildId);
+}
+
+export async function resolveChannel(
+	interaction: AnyInteraction,
+	guild?: Guild
+): Awaitable<GuildBasedChannel> {
+	if (null === interaction.channelId) {
+		throw new Error(
+			"Attempted to resolve channel for interaction without channel attached!"
+		);
+	}
+
+	if (undefined === guild) {
+		guild = await resolveGuild(interaction);
+	}
+
+	const channel = await guild.channels.fetch(interaction.channelId);
+	if (null === channel) {
+		throw new Error(
+			`No channel found with id "${interaction.guildId}" ` +
+				`in guild with id "${guild.id}"`
+		);
+	}
+
+	return channel;
+}
+
+export async function resolveGuildExecutor(
+	interaction: AnyInteraction,
+	guild?: Guild
+): Awaitable<GuildMember> {
+	if (undefined === guild) {
+		guild = await resolveGuild(interaction);
+	}
+
+	return await guild.members.fetch(interaction.user.id);
+}
+
+export function resolveExecutor(interaction: AnyInteraction): Awaitable<User> {
+	return app.discordBot.users.fetch(interaction.user.id);
 }

@@ -1,5 +1,5 @@
 import type { BaseMessageOptions, Message, Snowflake } from "discord.js";
-import type { DBStaticMessage } from "@/db/types.ts";
+import type { DbStaticMessage } from "@/db/types.ts";
 import type { Awaitable, MaybeAwaitable } from "@/utils/awaitable.ts";
 import type { MaybeArray, MaybeSupplier } from "@/utils/types.ts";
 
@@ -67,7 +67,7 @@ export class StaticMessage {
 		return this.payload;
 	}
 
-	private getDBEntry(): Awaitable<DBStaticMessage | undefined> {
+	private getDBEntry(): Awaitable<DbStaticMessage | undefined> {
 		return db().query.staticMessages.findFirst({
 			where: {
 				name: this.name

@@ -12,6 +12,7 @@ export class SlashSubCommand {
 	public readonly description: string;
 	public readonly options?: APIApplicationCommandBasicOption[];
 	public readonly runnable: SlashCommand.Runnable;
+	public readonly autocomplete: SlashCommand.AutocompleteRunnable | null;
 
 	public constructor(
 		name: string,
@@ -22,6 +23,7 @@ export class SlashSubCommand {
 		this.description = options.description;
 		this.options = options.options;
 		this.runnable = runnable;
+		this.autocomplete = options.autocomplete ?? null;
 	}
 
 	public toJSON(): APIApplicationCommandSubcommandOption {
@@ -37,5 +39,6 @@ export class SlashSubCommand {
 export namespace SlashSubCommand {
 	export interface Options extends SlashCommand.Options {
 		options: APIApplicationCommandBasicOption[];
+		autocomplete: SlashCommand.AutocompleteRunnable;
 	}
 }

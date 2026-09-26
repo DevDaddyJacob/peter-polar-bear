@@ -43,9 +43,11 @@
 	"dependencies": {
 		"@googleapis/drive": "20.2.0",
 		"@googleapis/sheets": "13.0.2",
+		"any-ascii": "0.3.3",
 		"discord.js": "14.27.0",
 		"dotenv": "17.4.2",
 		"drizzle-orm": "1.0.0-rc.4",
+		"fuse.js": "7.5.0",
 		"googleapis-common": "8.0.3",
 		"pg": "8.23.0",
 		"pino": "10.3.1",

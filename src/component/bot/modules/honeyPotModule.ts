@@ -10,7 +10,6 @@ import { toLogFormat } from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
 import { DiscordFormatting } from "@/utils/discordFormatting.ts";
 import { assert } from "@/utils/functions.ts";
-import { app } from "@";
 
 const honeyPotStaticMessage = new StaticMessage("honey_pot", Channels.HONEY_POT, {
 	allowedMentions: {
@@ -85,8 +84,6 @@ export async function onEventHoneyPotMessage(this: PeterPolarBearBot, message: M
 }
 
 export async function periodicHoneyPotRefresh(): Awaitable {
-	const guild = await app.discordBot.iglooGuild.get();
-
 	// Ensure the info message exists
 	try {
 		await ensureHoneyPotMessageExists();

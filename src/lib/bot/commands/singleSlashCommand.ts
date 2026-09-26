@@ -6,6 +6,7 @@ import { SlashCommand } from "@/lib/bot/commands/slashCommand.ts";
 export class SingleSlashCommand extends SlashCommand {
 	public override readonly options?: APIApplicationCommandBasicOption[];
 	public readonly runnable: SlashCommand.Runnable;
+	public readonly autocomplete: SlashCommand.AutocompleteRunnable | null;
 
 	public constructor(
 		name: string,
@@ -16,11 +17,13 @@ export class SingleSlashCommand extends SlashCommand {
 
 		this.options = options.options;
 		this.runnable = runnable;
+		this.autocomplete = options.autocomplete ?? null;
 	}
 }
 
 export namespace SingleSlashCommand {
 	export interface Options extends SlashCommand.Options {
 		options: APIApplicationCommandBasicOption[];
+		autocomplete: SlashCommand.AutocompleteRunnable;
 	}
 }

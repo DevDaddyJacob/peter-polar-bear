@@ -1,5 +1,6 @@
 import type {
 	APIApplicationCommandOption,
+	AutocompleteInteraction,
 	ChatInputCommandInteraction,
 	RESTPostAPIChatInputApplicationCommandsJSONBody
 } from "discord.js";
@@ -16,7 +17,7 @@ export abstract class SlashCommand extends Command {
 	public abstract readonly options?: APIApplicationCommandOption[];
 	public readonly description: string;
 
-	public constructor(
+	protected constructor(
 		name: string,
 		options: PartialExcept<SlashCommand.Options, "description">
 	) {
@@ -45,5 +46,10 @@ export namespace SlashCommand {
 	export type Runnable = (
 		this: BotClient,
 		interaction: ChatInputCommandInteraction
+	) => MaybeAwaitable;
+
+	export type AutocompleteRunnable = (
+		this: BotClient,
+		interaction: AutocompleteInteraction
 	) => MaybeAwaitable;
 }

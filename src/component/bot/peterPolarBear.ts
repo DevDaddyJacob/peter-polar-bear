@@ -1,5 +1,6 @@
 import type {
 	AnySelectMenuInteraction,
+	AutocompleteInteraction,
 	BaseInteraction,
 	ButtonInteraction,
 	ChannelSelectMenuInteraction,
@@ -31,7 +32,13 @@ import {
 	onEventHoneyPotMessage,
 	periodicHoneyPotRefresh
 } from "@/bot/modules/honeyPotModule.ts";
-import { CommandOffice, OfficeDirectoryNavButton } from "@/bot/modules/officeModule.ts";
+import {
+	CommandOffice,
+	OfficeDirectoryNavButton,
+	officeCache,
+	onEventWaitingRoomJoin,
+	periodicOfficeWaitingRoomRefresh
+} from "@/bot/modules/officeModule.ts";
 import { periodicRulesAndInfoRefresh } from "@/bot/modules/ruleAndInfoModule.ts";
 import { getFullCommandName, tryReplyToInteraction } from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
@@ -69,6 +76,11 @@ export class PeterPolarBearBot extends BotClient {
 			"messageCreate",
 			this.wrapEventHandler("messageCreate", onEventHoneyPotMessage)
 		);
+
+		this.on(
+			"voiceStateUpdate",
+			this.wrapEventHandler("voiceStateUpdate", onEventWaitingRoomJoin)
+		);
 	}
 
 	public async discordLog(
@@ -82,15 +94,63 @@ export class PeterPolarBearBot extends BotClient {
 		return await channel.send(payload);
 	}
 
+	public async tryFindAppCommand(name: string) {
+		if (null === this.application) {
+			return null;
+		}
+
+		const commands = await this.application.commands.fetch({ force: true });
+
+		const cmd = commands.find(c => name === c.name);
+		if (undefined === cmd) {
+			return null;
+		}
+
+		return cmd;
+	}
+
+	public async tryFindAppSubCommand(name: string, subCommand: string) {
+		if (null === this.application) {
+			return null;
+		}
+
+		const cmdGroup = await this.tryFindAppCommand(name);
+		if (null === cmdGroup) {
+			return null;
+		}
+
+		const cmd = cmdGroup.options.find(o => subCommand === o.name);
+		if (undefined === cmd) {
+			return null;
+		}
+
+		return cmd;
+	}
+
 	protected override async onReady() {
+		botLogger.debug("Refreshing office cache");
+
+		await officeCache.refresh();
+
+		botLogger.info("Refreshed office cache");
+
+		botLogger.debug("Updating static messages");
+
 		await periodicGettingStartedScan();
-		setInterval(periodicGettingStartedScan, 5 * 60 * 1000);
-
 		await periodicRulesAndInfoRefresh();
-		setInterval(periodicRulesAndInfoRefresh, 15 * 60 * 1000);
-
 		await periodicHoneyPotRefresh();
+		await periodicOfficeWaitingRoomRefresh();
+
+		botLogger.info("Updated static messages");
+
+		botLogger.debug("Starting static messages periodic updates");
+
+		setInterval(periodicGettingStartedScan, 5 * 60 * 1000);
+		setInterval(periodicRulesAndInfoRefresh, 15 * 60 * 1000);
 		setInterval(periodicHoneyPotRefresh, 15 * 60 * 1000);
+		setInterval(periodicOfficeWaitingRoomRefresh, 15 * 60 * 1000);
+
+		botLogger.info("Started static messages periodic updates");
 	}
 
 	protected override async handleInteractionError(
@@ -176,6 +236,30 @@ export class PeterPolarBearBot extends BotClient {
 
 		// Try to run the command
 		await command.runnable.call(this, interaction);
+	}
+
+	protected override async handleInteractionAutocomplete(
+		interaction: AutocompleteInteraction
+	): Awaitable {
+		// Try to find the application command data for this interaction
+		const command = this.tryFindMatchingRunnableChatCommand(interaction);
+		if (null === command) {
+			// TODO: some form of logging here
+			botLogger.error(
+				`Failed to find a matching command for command "${getFullCommandName(interaction)}"`
+			);
+			return;
+		}
+
+		if (null === command.autocomplete) {
+			// TODO: some form of logging here
+			botLogger.warn(
+				`Command "${getFullCommandName(interaction)}" doesn't support autocomplete!`
+			);
+			return;
+		}
+
+		await command.autocomplete.call(this, interaction);
 	}
 
 	protected override async handleInteractionContextMenu(

@@ -1,25 +1,39 @@
 import type {
 	APIMessageTopLevelComponent,
+	AutocompleteInteraction,
 	BaseMessageOptions,
 	ButtonInteraction,
 	ChatInputCommandInteraction,
-	GuildMember
+	GuildMember,
+	VoiceState
 } from "discord.js";
-import type { DBFullOffice, NewDBOffice } from "@/db/types.ts";
+import type { PeterPolarBearBot } from "@/bot/peterPolarBear.ts";
+import type { DbFullOffice, NewDbOffice } from "@/db/types.ts";
 import type { Awaitable } from "@/utils/awaitable.ts";
 
-import { ButtonStyle, ComponentType } from "discord.js";
+import { ApplicationCommandOptionType, ButtonStyle, ComponentType } from "discord.js";
 import { count } from "drizzle-orm";
+import { Channels } from "@/bot/constants/channels.ts";
 import { Colours } from "@/bot/constants/colours.ts";
+import { OfficeCache } from "@/bot/lib/officeCache.ts";
+import { StaticMessage } from "@/bot/lib/staticMessage.ts";
+import { resolveGuildExecutor } from "@/bot/utils.ts";
 import { db } from "@/db/connect.ts";
 import * as schema from "@/db/schema.ts";
+import { errorReport } from "@/error/report.ts";
 import { FuzzyButton } from "@/lib/bot/buttons/fuzzyButton.ts";
 import { SlashCommandGroup } from "@/lib/bot/commands/slashCommandGroup.ts";
 import { SlashSubCommand } from "@/lib/bot/commands/slashSubCommand.ts";
 import { DiscordFormatting } from "@/utils/discordFormatting.ts";
+import { assert } from "@/utils/functions.ts";
 import { app } from "@";
 
-export const KNOWN_OFFICES: NewDBOffice[] = [
+const officeNotifyMapping = new Map<string, number>();
+const OFFICE_NOTIFY_INTERVAL_MS = 5 * 60 * 1000;
+
+export const officeCache = new OfficeCache();
+
+export const KNOWN_OFFICES: NewDbOffice[] = [
 	{
 		ownerId: "194201083738980353",
 		channelId: "1239197010951671920",
@@ -50,11 +64,63 @@ export const KNOWN_OFFICES: NewDBOffice[] = [
 	}
 ];
 
+const waitingRoomStaticMessage = new StaticMessage(
+	"office_waiting_room",
+	Channels.OFFICES_WAITING_ROOM,
+	async () => {
+		const officeCmd = await app.discordBot.tryFindAppCommand(CommandOffice.name);
+
+		let cmdString = "`/office notify`";
+		if (null !== officeCmd) {
+			cmdString = DiscordFormatting.SubCommand(
+				officeCmd.name,
+				notifySubCommand.name,
+				officeCmd.id
+			);
+		}
+
+		return {
+			allowedMentions: {
+				parse: [],
+				roles: [],
+				users: []
+			},
+			flags: "IsComponentsV2",
+			components: [
+				{
+					type: ComponentType.Container,
+					components: [
+						{
+							type: ComponentType.TextDisplay,
+							content: "# Office Waiting Room"
+						},
+						{
+							type: ComponentType.TextDisplay,
+							content:
+								`Use the ${cmdString} command to notify a office owner your waiting for them.` +
+								"\nYou can only notify an office owner once every five (5) minutes."
+						}
+					]
+				}
+			]
+		};
+	}
+);
+
+export async function periodicOfficeWaitingRoomRefresh(): Awaitable {
+	// Ensure the info message exists
+	try {
+		await waitingRoomStaticMessage.update();
+	} catch (err) {
+		await errorReport(err as Error);
+	}
+}
+
 async function createOfficeDirectoryComponent(
 	currentPage: number,
 	numPerPage: number = 10
 ): Awaitable<BaseMessageOptions["components"]> {
-	const makeSingleOfficeRow = (office: DBFullOffice, owner: GuildMember | null) =>
+	const makeSingleOfficeRow = (office: DbFullOffice, owner: GuildMember | null) =>
 		({
 			type: ComponentType.Section,
 			components: [
@@ -161,24 +227,6 @@ async function createOfficeDirectoryComponent(
 	];
 }
 
-const directorySubCommand = new SlashSubCommand(
-	"directory",
-	{
-		description: "Lists all of the offices, their name, key and owner"
-	},
-	async (interaction: ChatInputCommandInteraction) => {
-		await interaction.reply({
-			allowedMentions: {
-				parse: [],
-				roles: [],
-				users: []
-			},
-			components: await createOfficeDirectoryComponent(1),
-			flags: ["IsComponentsV2"]
-		});
-	}
-);
-
 export const OfficeDirectoryNavButton = new FuzzyButton(
 	"office_directory_page_",
 	"startsWith",
@@ -202,11 +250,152 @@ export const OfficeDirectoryNavButton = new FuzzyButton(
 	}
 );
 
+const directorySubCommand = new SlashSubCommand(
+	"directory",
+	{
+		description: "Lists all of the offices, their name, key and owner"
+	},
+	async (interaction: ChatInputCommandInteraction) => {
+		await interaction.reply({
+			allowedMentions: {
+				parse: [],
+				roles: [],
+				users: []
+			},
+			components: await createOfficeDirectoryComponent(1),
+			flags: ["IsComponentsV2"]
+		});
+	}
+);
+
+const notifySubCommand = new SlashSubCommand(
+	"notify",
+	{
+		description: "Notify a office owner that your waiting for them.",
+		options: [
+			{
+				type: ApplicationCommandOptionType.String,
+				name: "office",
+				description: "The office you're waiting for.",
+				autocomplete: true,
+				required: true
+			}
+		],
+		autocomplete: async (interaction: AutocompleteInteraction) => {
+			const focused = interaction.options.getFocused();
+			const query = OfficeCache.normalizeToAscii(focused);
+
+			const searchQuery = async (q: string) => {
+				if (0 === q.length) {
+					return officeCache.data.slice(0, 25);
+				}
+
+				const result = await officeCache.searchByName(query, { limit: 25 });
+				return result.map(r => r.item);
+			};
+
+			const results = await searchQuery(query);
+
+			const processedResulted = results.map(o => {
+				let officeName = o.officeName;
+				if (100 < officeName.length) {
+					officeName = `${officeName.slice(0, 97)}...`;
+				}
+
+				return {
+					name: officeName,
+					value: o.officeId
+				};
+			});
+
+			await interaction.respond(processedResulted);
+		}
+	},
+	async (interaction: ChatInputCommandInteraction) => {
+		const selectedOfficeId = interaction.options.getString("office", true);
+		const office = await officeCache.get(selectedOfficeId);
+		if (null === office) {
+			throw new Error(`No office found with id "${selectedOfficeId}"`);
+		}
+
+		const guild = await app.discordBot.iglooGuild.get();
+		const officeChannel = await guild.channels.fetch(office.channelId);
+		if (null === officeChannel || !officeChannel.isTextBased()) {
+			throw new Error(`No such channel with ID ${officeChannel}`);
+		}
+
+		const executor = await resolveGuildExecutor(interaction, guild);
+		if (Channels.OFFICES_WAITING_ROOM !== executor.voice.channelId) {
+			await interaction.reply({
+				content:
+					`You must use this while in the ` +
+					`${DiscordFormatting.Channel(Channels.OFFICES_WAITING_ROOM)} channel`,
+				flags: "Ephemeral"
+			});
+
+			return;
+		}
+
+		const now = Date.now();
+		const lastNotify = officeNotifyMapping.get(executor.id) ?? 0;
+		if (lastNotify + OFFICE_NOTIFY_INTERVAL_MS > now) {
+			await interaction.reply({
+				content: "You are currently on a notify cooldown!",
+				flags: "Ephemeral"
+			});
+
+			return;
+		}
+
+		officeNotifyMapping.set(executor.id, now);
+
+		await officeChannel.send(
+			`🔔 Attn. ${DiscordFormatting.User(office.ownerId)},` +
+				`\n${DiscordFormatting.User(executor)} is in the waiting room!`
+		);
+
+		await interaction.reply({
+			content: "Notification sent successfully!",
+			flags: "Ephemeral"
+		});
+	}
+);
+
 export const CommandOffice = new SlashCommandGroup(
 	"office",
 	{
 		description: "Group of commands for interacting with the office system",
 		dmPermission: false
 	},
-	directorySubCommand
+	directorySubCommand,
+	notifySubCommand
 );
+
+export async function onEventWaitingRoomJoin(
+	this: PeterPolarBearBot,
+	oldState: VoiceState,
+	newState: VoiceState
+) {
+	// Ensure the user is actually joining
+	if (
+		Channels.OFFICES_WAITING_ROOM !== newState.channelId ||
+		oldState.channelId === newState.channelId
+	) {
+		console.log(1);
+		return;
+	}
+
+	// Ghost ping them in the VC text chat
+	const guild = await app.discordBot.iglooGuild.get();
+
+	const channel = await guild.channels.fetch(Channels.OFFICES_WAITING_ROOM);
+	if (null === channel || !channel.isTextBased()) {
+		throw new Error(`No such channel with ID ${channel}`);
+	}
+
+	const member = oldState.member ?? newState.member;
+	assert(null !== member);
+
+	const message = await channel.send(DiscordFormatting.User(member));
+	setTimeout(async () => await message.delete(), 60 * 1000);
+}

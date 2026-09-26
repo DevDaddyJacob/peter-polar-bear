@@ -1,10 +1,4 @@
-import {
-	foreignKey,
-	primaryKey,
-	snakeCase,
-	unique,
-	varchar
-} from "drizzle-orm/pg-core";
+import { foreignKey, primaryKey, snakeCase, unique, varchar } from "drizzle-orm/pg-core";
 import { defaultUuidv7, discordSnowflake, timestamps, uuidv7 } from "@/db/utils.ts";
 
 export const users = snakeCase.table(

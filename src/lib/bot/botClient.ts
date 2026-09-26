@@ -1,5 +1,6 @@
 import type {
 	AnySelectMenuInteraction,
+	AutocompleteInteraction,
 	BaseInteraction,
 	ButtonInteraction,
 	ChatInputCommandInteraction,
@@ -14,7 +15,7 @@ import type { Modal } from "@/lib/bot/modal.ts";
 import type { SelectMenu } from "@/lib/bot/selectMenus/selectMenu.ts";
 import type { Awaitable, MaybeAwaitable } from "@/utils/awaitable.ts";
 
-import { Client, Collection, Routes } from "discord.js";
+import { Client, Collection, } from "discord.js";
 import { errorReport } from "@/error/report.ts";
 import { MessageCommand } from "@/lib/bot/commands/messageCommand.ts";
 import { SingleSlashCommand } from "@/lib/bot/commands/singleSlashCommand.ts";
@@ -154,12 +155,19 @@ export abstract class BotClient extends Client {
 	@TraceInvocation(botLogger)
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: not something to split up
 	protected tryFindMatchingRunnableChatCommand(
-		interaction: ChatInputCommandInteraction
+		interaction: ChatInputCommandInteraction | AutocompleteInteraction
 	): SingleSlashCommand | SlashSubCommand | null {
-		// TODO: Add better tracing
+		const logPrefix = "BotClient.tryFindMatchingRunnableChatCommand:";
+
 		const cmdName = interaction.commandName;
 		const cmdSubCommandName = interaction.options.getSubcommand(false);
 		const cmdSubCommandGroupName = interaction.options.getSubcommandGroup(false);
+		botLogger.trace(
+			`${logPrefix} finding match for ` +
+				`name "${cmdName}", ` +
+				`subcommand name "${cmdSubCommandName ?? "<null>"}", ` +
+				`and subcommand group name "${cmdSubCommandGroupName ?? "<null>"}"`
+		);
 
 		const cmd = this.commands.get(cmdName);
 		if (
@@ -167,26 +175,47 @@ export abstract class BotClient extends Client {
 			cmd instanceof MessageCommand ||
 			cmd instanceof UserCommand
 		) {
+			botLogger.trace(`${logPrefix} no matching command for name "${cmdName}"`);
 			return null;
 		}
 
 		// Looking for a single command
 		if (null === cmdSubCommandName && null === cmdSubCommandGroupName) {
+			botLogger.trace(`${logPrefix} looking for a single command "${cmdName}"`);
+
 			if (cmd instanceof SingleSlashCommand) {
 				return cmd;
 			}
 
+			botLogger.trace(
+				`${logPrefix} found command is not of type '${SingleSlashCommand.name}'`
+			);
 			return null;
 		}
 
 		// Looking for a single sub command
 		if (null !== cmdSubCommandName && null === cmdSubCommandGroupName) {
+			botLogger.trace(
+				`${logPrefix} looking for a single sub command "${cmdSubCommandName}"`
+			);
+
 			if (!(cmd instanceof SlashCommandGroup)) {
+				botLogger.trace(
+					`${logPrefix} found command is not of type '${SlashCommandGroup.name}'`
+				);
 				return null;
 			}
 
 			const subCmd = cmd.subCommands.find(c => c.name === cmdSubCommandName);
 			if (undefined === subCmd || !(subCmd instanceof SlashSubCommand)) {
+				if (undefined === subCmd) {
+					botLogger.trace(`${logPrefix} subcommand was not found`);
+				} else {
+					botLogger.trace(
+						`${logPrefix} found subcommand is not of type '${SlashSubCommand.name}'`
+					);
+				}
+
 				return null;
 			}
 
@@ -195,22 +224,54 @@ export abstract class BotClient extends Client {
 
 		// Looking for a sub command in a subgroup
 		if (null !== cmdSubCommandName && null !== cmdSubCommandGroupName) {
+			botLogger.trace(
+				`${logPrefix} looking for a sub command "${cmdSubCommandName}" ` +
+					`in a subgroup "${cmdSubCommandGroupName}"`
+			);
+
 			if (!(cmd instanceof SlashCommandGroup)) {
+				botLogger.trace(
+					`${logPrefix} found command is not of type '${SlashCommandGroup.name}'`
+				);
 				return null;
 			}
 
 			const subCmdGroup = cmd.subCommands.find(c => c.name === cmdSubCommandGroupName);
 			if (undefined === subCmdGroup || !(subCmdGroup instanceof SlashSubCommandGroup)) {
+				if (undefined === subCmdGroup) {
+					botLogger.trace(`${logPrefix} subcommand group was not found`);
+				} else {
+					botLogger.trace(
+						`${logPrefix} found subcommand group is not of type ` +
+							`'${SlashSubCommandGroup.name}'`
+					);
+				}
+
 				return null;
 			}
 
 			const subCmd = subCmdGroup.subCommands.find(c => c.name === cmdSubCommandName);
 			if (undefined === subCmd || !(subCmd instanceof SlashSubCommand)) {
+				if (undefined === subCmd) {
+					botLogger.trace(`${logPrefix} subcommand was not found`);
+				} else {
+					botLogger.trace(
+						`${logPrefix} found subcommand is not of type '${SlashSubCommand.name}'`
+					);
+				}
+
 				return null;
 			}
 
 			return subCmd;
 		}
+
+		botLogger.warn(
+			`Failed to find any matching command for ` +
+				`name "${cmdName}", ` +
+				`subcommand name "${cmdSubCommandName ?? "<null>"}", ` +
+				`and subcommand group name "${cmdSubCommandGroupName ?? "<null>"}"`
+		);
 
 		return null;
 	}
@@ -231,6 +292,10 @@ export abstract class BotClient extends Client {
 	protected async handleInteractionChatCommand(
 		i: ChatInputCommandInteraction
 	): Awaitable {
+		/* no-op */
+	}
+
+	protected async handleInteractionAutocomplete(i: AutocompleteInteraction): Awaitable {
 		/* no-op */
 	}
 
@@ -270,19 +335,22 @@ export abstract class BotClient extends Client {
 
 		const commandsJson = this.commands.mapValues(c => c.toJSON());
 
-		await Promise.all(
-			guilds.map(g =>
-				this.rest.put(Routes.applicationGuildCommands(this.user.id, g.id), {
-					body: commandsJson
-				})
+		await Promise.all([
+			this.application.commands.set([]),
+			...guilds.map(g =>
+				this.application.commands.set(commandsJson.values().toArray(), g.id)
 			)
-		);
+		]);
 	}
 
 	private async handleInteractions(interaction: BaseInteraction) {
 		try {
 			if (interaction.isChatInputCommand()) {
 				return await this.handleInteractionChatCommand(interaction);
+			}
+
+			if (interaction.isAutocomplete()) {
+				return await this.handleInteractionAutocomplete(interaction);
 			}
 
 			if (interaction.isButton()) {

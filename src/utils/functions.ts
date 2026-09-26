@@ -28,18 +28,55 @@ export function setNestedValue(obj: any, path: NonEmptyArray<string>, value: any
 	nestedObj[finalKey] = value;
 }
 
-export function toErrorString(err: Error) {
-	const name = err.name ?? err.constructor.name;
-	const message = err.message;
-	const stack = err.stack ?? "";
+function getErrorFrames(err: Error): string {
+	const lines = (err.stack ?? "").split("\n");
 
-	if ("" === stack) {
-		return `${name}: ${message}`;
+	const i = lines.findIndex(line => /^\s*at\s/.test(line));
+
+	if (-1 === i) {
+		return "";
 	}
 
-	const cleanedStack = stack.split("\n").slice(1).join("\n");
+	return lines.slice(i).join("\n");
+}
 
-	return `${name}: ${message}\n${cleanedStack}`;
+function toErrorStringInternal(err: unknown, indent = "") {
+	if (!(err instanceof Error)) {
+		return indent + Bun.inspect(err);
+	}
+
+	const name = err.name || err.constructor?.name || "Error";
+	const parts = [`${name}: ${err.message}`];
+
+	const extras = Object.keys(err).filter(
+		key => !["name", "message", "stack", "cause", "errors"].includes(key)
+	);
+
+	for (const key of extras) {
+		// biome-ignore lint/suspicious/noExplicitAny: -
+		parts.push(`  ${key}: ${Bun.inspect((err as any)[key])}`);
+	}
+
+	const frames = getErrorFrames(err);
+	if (undefined !== frames) {
+		parts.push(frames);
+	}
+
+	if (err instanceof AggregateError) {
+		for (const nestedErr of err.errors) {
+			parts.push(`\n  [aggregated]\n${toErrorStringInternal(nestedErr, `${indent}  `)}`);
+		}
+	} else if (err.cause !== undefined) {
+		parts.push(
+			`\n  [cause]: ${toErrorStringInternal(err.cause, `${indent}  `).trimStart()}`
+		);
+	}
+
+	return parts.map(part => indent + part).join("\n");
+}
+
+export function toErrorString(err: unknown) {
+	return toErrorStringInternal(err);
 }
 
 // Thanks Mazen and Kaspian for the idea of this geniousness
