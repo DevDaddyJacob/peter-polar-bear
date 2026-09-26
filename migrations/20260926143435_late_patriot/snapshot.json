@@ -1,0 +1,365 @@
+{
+  "version": "8",
+  "dialect": "postgres",
+  "id": "e4404e1c-e36a-4759-b050-cc7b73bd3082",
+  "prevIds": [
+    "3be2e3bb-2f78-4c89-a14b-ab6746125eb3"
+  ],
+  "ddl": [
+    {
+      "isRlsEnabled": false,
+      "name": "offices",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "static_messages",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "users",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "uuidv7()",
+      "generated": null,
+      "identity": null,
+      "name": "office_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "owner_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "channel_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "office_name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "key_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "key_name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "type": "iso_date_time",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "type": "iso_date_time",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "uuidv7()",
+      "generated": null,
+      "identity": null,
+      "name": "static_message_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "static_messages"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "static_messages"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "guild_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "static_messages"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "channel_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "static_messages"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "message_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "static_messages"
+    },
+    {
+      "type": "iso_date_time",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "static_messages"
+    },
+    {
+      "type": "iso_date_time",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "static_messages"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "iso_date_time",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "iso_date_time",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "owner_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "user_id"
+      ],
+      "onUpdate": "CASCADE",
+      "onDelete": "CASCADE",
+      "name": "fk_offices_owner_user_id",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "columns": [
+        "office_id"
+      ],
+      "nameExplicit": true,
+      "name": "pk_offices",
+      "entityType": "pks",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "columns": [
+        "static_message_id"
+      ],
+      "nameExplicit": true,
+      "name": "pk_static_messages",
+      "entityType": "pks",
+      "schema": "public",
+      "table": "static_messages"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "nameExplicit": true,
+      "name": "pk_users",
+      "entityType": "pks",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "channel_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "uk_offices_channel_id",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "office_name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "uk_offices_office_name",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "key_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "uk_offices_key_id",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "key_name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "uk_offices_key_name",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "offices"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "uk_static_messages_name",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "static_messages"
+    }
+  ],
+  "renames": []
+}

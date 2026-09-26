@@ -5,7 +5,7 @@ export const relations = defineRelations(schema, r => ({
 	users: {
 		offices: r.many.offices({
 			from: r.users.userId,
-			to: r.offices.ownerUserId
+			to: r.offices.ownerId
 		})
 	},
 	offices: {

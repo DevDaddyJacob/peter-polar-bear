@@ -1,6 +1,5 @@
 import { defineConfig } from "drizzle-kit";
 import { assert } from "@/utils/functions.ts";
-import { env } from "@/modules/envModule.ts";
 import { DATABASE_ENV_CONFIG } from "@/db/config.ts";
 import type { ConnectionOptions } from "node:tls";
 

@@ -16,7 +16,7 @@
 		"check": "bunx --bun @biomejs/biome check --config-path=biome.json --max-diagnostics=none",
 		"format": "bunx --bun @biomejs/biome format --write --config-path=biome.json --max-diagnostics=none",
 		"lint": "bunx --bun @biomejs/biome lint --config-path=biome.json --max-diagnostics=none",
-		"db-generate": "bunx drizzle-kit generate",
+		"db-generate": "bunx --bun drizzle-kit generate",
 		"local-build": "docker compose build",
 		"local-reload": "docker compose up --detach --force-recreate",
 		"local-run": "docker compose up --detach --build",

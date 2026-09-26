@@ -1,8 +1,9 @@
 import { GatewayIntentBits, Partials } from "discord.js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { KNOWN_OFFICES } from "@/bot/modules/officeModule.ts";
 import { PeterPolarBearBot } from "@/bot/peterPolarBear.ts";
 import { db } from "@/db/connect.ts";
-import { staticMessages } from "@/db/schema.ts";
+import { offices, staticMessages, users } from "@/db/schema.ts";
 import { env } from "@/modules/envModule";
 import { appLogger, printBanner } from "@/modules/loggingModule";
 import { TraceInvocationAsync } from "@/utils/decorators.ts";
@@ -108,32 +109,36 @@ export class Application {
 
 		appLogger.info("Database migrations applied");
 
-		// If no static messages exist, seed them with known data.
-		const existingMessages = await db().query.staticMessages.findMany();
-		if (0 === existingMessages.length) {
-			await db()
-				.insert(staticMessages)
-				.values([
-					{
-						name: "getting_started",
-						guildId: "1239027847918653470",
-						channelId: "1239590456879353927",
-						messageId: "1550240142705561631"
-					},
-					{
-						name: "info",
-						guildId: "1239027847918653470",
-						channelId: "1334613350536970240",
-						messageId: "1550240151995813963"
-					},
-					{
-						name: "honey_pot",
-						guildId: "1239027847918653470",
-						channelId: "1542241820698742845",
-						messageId: "1550240156441911467"
-					}
-				]);
-		}
+		await db()
+			.insert(staticMessages)
+			.values([
+				{
+					name: "getting_started",
+					guildId: "1239027847918653470",
+					channelId: "1239590456879353927",
+					messageId: "1550240142705561631"
+				},
+				{
+					name: "info",
+					guildId: "1239027847918653470",
+					channelId: "1334613350536970240",
+					messageId: "1550240151995813963"
+				},
+				{
+					name: "honey_pot",
+					guildId: "1239027847918653470",
+					channelId: "1542241820698742845",
+					messageId: "1550240156441911467"
+				}
+			])
+			.onConflictDoNothing();
+
+		await db()
+			.insert(users)
+			.values(KNOWN_OFFICES.map(o => ({ userId: o.ownerId })))
+			.onConflictDoNothing();
+
+		await db().insert(offices).values(KNOWN_OFFICES).onConflictDoNothing();
 
 		appLogger.info("Finished setting up the database");
 	}

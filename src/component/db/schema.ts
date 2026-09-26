@@ -2,23 +2,18 @@ import {
 	foreignKey,
 	primaryKey,
 	snakeCase,
-	text,
 	unique,
 	varchar
 } from "drizzle-orm/pg-core";
-import { defaultUuidv7, timestamps, uuidv7 } from "@/db/utils.ts";
+import { defaultUuidv7, discordSnowflake, timestamps, uuidv7 } from "@/db/utils.ts";
 
 export const users = snakeCase.table(
 	"users",
 	{
-		userId: uuidv7().notNull().default(defaultUuidv7),
-		discordUserId: text().notNull(),
+		userId: discordSnowflake().notNull(),
 		...timestamps
 	},
-	t => [
-		primaryKey({ name: "pk_users", columns: [t.userId] }),
-		unique("uk_users_discord_user_id").on(t.discordUserId)
-	]
+	t => [primaryKey({ name: "pk_users", columns: [t.userId] })]
 );
 
 export const staticMessages = snakeCase.table(
@@ -26,9 +21,9 @@ export const staticMessages = snakeCase.table(
 	{
 		staticMessageId: uuidv7().notNull().default(defaultUuidv7),
 		name: varchar({ length: 50 }).notNull(),
-		guildId: text().notNull(),
-		channelId: text().notNull(),
-		messageId: text().notNull(),
+		guildId: discordSnowflake().notNull(),
+		channelId: discordSnowflake().notNull(),
+		messageId: discordSnowflake().notNull(),
 		...timestamps
 	},
 	t => [
@@ -41,10 +36,10 @@ export const offices = snakeCase.table(
 	"offices",
 	{
 		officeId: uuidv7().notNull().default(defaultUuidv7),
-		ownerUserId: uuidv7().notNull(),
-		channelId: text().notNull(),
+		ownerId: discordSnowflake().notNull(),
+		channelId: discordSnowflake().notNull(),
 		officeName: varchar({ length: 50 }).notNull(),
-		keyId: text().notNull(),
+		keyId: discordSnowflake().notNull(),
 		keyName: varchar({ length: 50 }).notNull(),
 		...timestamps
 	},
@@ -56,7 +51,7 @@ export const offices = snakeCase.table(
 		unique("uk_offices_key_name").on(t.keyName),
 		foreignKey({
 			name: "fk_offices_owner_user_id",
-			columns: [t.ownerUserId],
+			columns: [t.ownerId],
 			foreignColumns: [users.userId]
 		})
 			.onDelete("cascade")

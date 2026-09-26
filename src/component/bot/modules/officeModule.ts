@@ -5,7 +5,7 @@ import type {
 	ChatInputCommandInteraction,
 	GuildMember
 } from "discord.js";
-import type { DBFullOffice, } from "@/db/types.ts";
+import type { DBFullOffice, NewDBOffice } from "@/db/types.ts";
 import type { Awaitable } from "@/utils/awaitable.ts";
 
 import { ButtonStyle, ComponentType } from "discord.js";
@@ -18,6 +18,37 @@ import { SlashCommandGroup } from "@/lib/bot/commands/slashCommandGroup.ts";
 import { SlashSubCommand } from "@/lib/bot/commands/slashSubCommand.ts";
 import { DiscordFormatting } from "@/utils/discordFormatting.ts";
 import { app } from "@";
+
+export const KNOWN_OFFICES: NewDBOffice[] = [
+	{
+		ownerId: "194201083738980353",
+		channelId: "1239197010951671920",
+		officeName: "〖🐧〗ᴅᴇᴠ ᴅᴀᴅᴅʏ's ᴏғғɪᴄᴇ",
+		keyId: "1239034020596285470",
+		keyName: "🔑 DevJacob's Key"
+	},
+	{
+		ownerId: "661256432838115371",
+		channelId: "1239595190973501533",
+		officeName: "〖☠〗ᴛᴏʀᴛᴜʀᴇ ʀᴏᴏᴍ",
+		keyId: "1239595085281230848",
+		keyName: "🔑 iFree's Key"
+	},
+	{
+		ownerId: "717190806989045805",
+		channelId: "1335056117696434188",
+		officeName: "〖🦅〗ᴛʜᴇ ᴡʜɪᴛᴇ ʜᴏᴜsᴇ",
+		keyId: "1335056114773004388",
+		keyName: "🔑 US Government's Key"
+	},
+	{
+		ownerId: "688154256762470476",
+		channelId: "1317669323531091979",
+		officeName: "〖🐬〗ʙʀᴏᴏᴋʟʏɴ's ᴏғғɪᴄᴇ",
+		keyId: "1317669321136275528",
+		keyName: "🔑 Squishy Key"
+	}
+];
 
 async function createOfficeDirectoryComponent(
 	currentPage: number,
@@ -35,7 +66,7 @@ async function createOfficeDirectoryComponent(
 					type: ComponentType.TextDisplay,
 					content:
 						`-# ‍     Key: ${office.keyName}` +
-						`\n-# ‍     Owner: ${DiscordFormatting.User(office.owner.discordUserId)} ` +
+						`\n-# ‍     Owner: ${DiscordFormatting.User(office.owner.userId)} ` +
 						`(${owner?.displayName ?? "unknown"})`
 				}
 			],
@@ -66,9 +97,9 @@ async function createOfficeDirectoryComponent(
 	const officeOwnersEntries = await Promise.all(
 		offices.map(async o => {
 			try {
-				return [o.owner.discordUserId, await guild.members.fetch(o.owner.discordUserId)];
+				return [o.owner.userId, await guild.members.fetch(o.owner.userId)];
 			} catch {
-				return [o.owner.discordUserId, null];
+				return [o.owner.userId, null];
 			}
 		})
 	);
@@ -77,7 +108,7 @@ async function createOfficeDirectoryComponent(
 		Object.fromEntries(officeOwnersEntries);
 
 	const officeRows = offices.map(o =>
-		makeSingleOfficeRow(o, officeOwners[o.owner.discordUserId])
+		makeSingleOfficeRow(o, officeOwners[o.owner.userId])
 	);
 
 	const previousButton = {

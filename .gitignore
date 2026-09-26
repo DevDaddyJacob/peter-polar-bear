@@ -1,3 +1,4 @@
+.bun-cache/
 build/
 errors/
 logs/

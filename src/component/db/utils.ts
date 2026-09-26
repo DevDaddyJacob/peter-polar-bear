@@ -13,6 +13,24 @@ export const isoDateTime = customType<{ data: Date; driverData: string }>({
 	}
 });
 
+export const discordSnowflake = customType<{
+	data: string;
+}>({
+	dataType() {
+		return "varchar(20)";
+	},
+	fromDriver(value: unknown): string {
+		return String(value);
+	},
+	toDriver(value: string): string {
+		if (!/^\d+$/.test(value)) {
+			throw new Error(`Invalid Discord Snowflake: "${value}" must contain only digits.`);
+		}
+
+		return value;
+	}
+});
+
 export const defaultUuidv7 = sql`uuidv7()`;
 
 export const uuidv7 = <TName extends string>(name?: TName) => uuid(name);
