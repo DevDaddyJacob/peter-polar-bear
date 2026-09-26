@@ -32,6 +32,7 @@ import {
 	onEventHoneyPotMessage,
 	periodicHoneyPotRefresh
 } from "@/bot/modules/honeyPotModule.ts";
+import { CommandMyOffice } from "@/bot/modules/myOfficeModule.ts";
 import { CommandOfficeAdmin } from "@/bot/modules/officeAdminModule.ts";
 import {
 	CommandOffice,
@@ -73,6 +74,7 @@ export class PeterPolarBearBot extends BotClient {
 		this.addCommandInternal(CommandDev);
 		this.addCommandInternal(CommandOffice);
 		this.addCommandInternal(CommandOfficeAdmin);
+		this.addCommandInternal(CommandMyOffice);
 
 		this.on(
 			"messageCreate",
