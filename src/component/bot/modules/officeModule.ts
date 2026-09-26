@@ -10,11 +10,13 @@ import type {
 import type { PeterPolarBearBot } from "@/bot/peterPolarBear.ts";
 import type { DbFullOffice, NewDbOffice } from "@/db/types.ts";
 import type { Awaitable } from "@/utils/awaitable.ts";
+import type { KeyOf } from "@/utils/types.ts";
 
 import { ApplicationCommandOptionType, ButtonStyle, ComponentType } from "discord.js";
 import { count } from "drizzle-orm";
 import { Channels } from "@/bot/constants/channels.ts";
 import { Colours } from "@/bot/constants/colours.ts";
+import type { IndexedDbOffice, } from "@/bot/lib/officeCache.ts";
 import { OfficeCache } from "@/bot/lib/officeCache.ts";
 import { StaticMessage } from "@/bot/lib/staticMessage.ts";
 import { resolveGuildExecutor } from "@/bot/utils.ts";
@@ -63,6 +65,43 @@ export const KNOWN_OFFICES: NewDbOffice[] = [
 		keyName: "🔑 Squishy Key"
 	}
 ];
+
+export function getOfficeAutocompleteFunc(valueKey: KeyOf<IndexedDbOffice>) {
+	return async (interaction: AutocompleteInteraction) => {
+		const focused = interaction.options.getFocused();
+		const query = OfficeCache.normalizeToAscii(focused);
+
+		const searchQuery = async (q: string) => {
+			if (0 === q.length) {
+				return officeCache.data.slice(0, 25);
+			}
+
+			const result = await officeCache.searchByName(query, { limit: 25 });
+			return result.map(r => r.item);
+		};
+
+		const results = await searchQuery(query);
+
+		const processedResulted = results.map(o => {
+			let officeName = o.officeName;
+			if (100 < officeName.length) {
+				officeName = `${officeName.slice(0, 97)}...`;
+			}
+
+			let value = o[valueKey];
+			if (value instanceof Date) {
+				value = value.toISOString();
+			}
+
+			return {
+				name: officeName,
+				value: value
+			};
+		});
+
+		await interaction.respond(processedResulted);
+	};
+}
 
 const waitingRoomStaticMessage = new StaticMessage(
 	"office_waiting_room",
@@ -281,35 +320,7 @@ const notifySubCommand = new SlashSubCommand(
 				required: true
 			}
 		],
-		autocomplete: async (interaction: AutocompleteInteraction) => {
-			const focused = interaction.options.getFocused();
-			const query = OfficeCache.normalizeToAscii(focused);
-
-			const searchQuery = async (q: string) => {
-				if (0 === q.length) {
-					return officeCache.data.slice(0, 25);
-				}
-
-				const result = await officeCache.searchByName(query, { limit: 25 });
-				return result.map(r => r.item);
-			};
-
-			const results = await searchQuery(query);
-
-			const processedResulted = results.map(o => {
-				let officeName = o.officeName;
-				if (100 < officeName.length) {
-					officeName = `${officeName.slice(0, 97)}...`;
-				}
-
-				return {
-					name: officeName,
-					value: o.officeId
-				};
-			});
-
-			await interaction.respond(processedResulted);
-		}
+		autocomplete: getOfficeAutocompleteFunc("officeId")
 	},
 	async (interaction: ChatInputCommandInteraction) => {
 		const selectedOfficeId = interaction.options.getString("office", true);
@@ -381,7 +392,6 @@ export async function onEventWaitingRoomJoin(
 		Channels.OFFICES_WAITING_ROOM !== newState.channelId ||
 		oldState.channelId === newState.channelId
 	) {
-		console.log(1);
 		return;
 	}
 

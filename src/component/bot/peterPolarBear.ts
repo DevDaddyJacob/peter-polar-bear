@@ -32,6 +32,7 @@ import {
 	onEventHoneyPotMessage,
 	periodicHoneyPotRefresh
 } from "@/bot/modules/honeyPotModule.ts";
+import { CommandOfficeAdmin } from "@/bot/modules/officeAdminModule.ts";
 import {
 	CommandOffice,
 	OfficeDirectoryNavButton,
@@ -71,6 +72,7 @@ export class PeterPolarBearBot extends BotClient {
 
 		this.addCommandInternal(CommandDev);
 		this.addCommandInternal(CommandOffice);
+		this.addCommandInternal(CommandOfficeAdmin);
 
 		this.on(
 			"messageCreate",
@@ -99,7 +101,10 @@ export class PeterPolarBearBot extends BotClient {
 			return null;
 		}
 
-		const commands = await this.application.commands.fetch({ force: true });
+		const commands = await this.application.commands.fetch({
+			guildId: PeterPolarBearBot.IGLOO_GUILD_ID,
+			force: true
+		});
 
 		const cmd = commands.find(c => name === c.name);
 		if (undefined === cmd) {
