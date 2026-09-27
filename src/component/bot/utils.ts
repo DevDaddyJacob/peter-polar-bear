@@ -1,5 +1,3 @@
-import type { Awaitable } from "@/utils/awaitable.ts";
-import type { Failable } from "@/utils/types.ts";
 import type {
 	AnySelectMenuInteraction,
 	BaseInteraction,
@@ -10,8 +8,11 @@ import type {
 	GuildBasedChannel,
 	Message,
 	ModalSubmitInteraction,
-	PartialGuildMember,
+	PartialGuildMember
 } from "discord.js";
+import type { Awaitable } from "@/utils/awaitable.ts";
+import type { Failable } from "@/utils/types.ts";
+
 import {
 	AutocompleteInteraction,
 	ChatInputCommandInteraction,

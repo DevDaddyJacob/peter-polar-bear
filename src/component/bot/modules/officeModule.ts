@@ -7,6 +7,7 @@ import type {
 	GuildMember,
 	VoiceState
 } from "discord.js";
+import type { IndexedDbOffice } from "@/bot/lib/officeCache.ts";
 import type { PeterPolarBearBot } from "@/bot/peterPolarBear.ts";
 import type { DbFullOffice, NewDbOffice } from "@/db/types.ts";
 import type { Awaitable } from "@/utils/awaitable.ts";
@@ -16,7 +17,6 @@ import { ApplicationCommandOptionType, ButtonStyle, ComponentType } from "discor
 import { count } from "drizzle-orm";
 import { Channels } from "@/bot/constants/channels.ts";
 import { Colours } from "@/bot/constants/colours.ts";
-import type { IndexedDbOffice, } from "@/bot/lib/officeCache.ts";
 import { OfficeCache } from "@/bot/lib/officeCache.ts";
 import { StaticMessage } from "@/bot/lib/staticMessage.ts";
 import { resolveGuildExecutor } from "@/bot/utils.ts";

@@ -1,27 +1,34 @@
-import type { Awaitable } from "@/utils/awaitable.ts";
 import type {
 	ChatInputCommandInteraction,
 	GuildChannel,
 	GuildMember,
 	PermissionResolvable,
-	Role,
+	Role
 } from "discord.js";
+import type { Awaitable } from "@/utils/awaitable.ts";
+
 import {
 	ApplicationCommandOptionType,
 	ChannelType,
+	ComponentType,
 	VideoQualityMode
 } from "discord.js";
 import { Categories } from "@/bot/constants/categories.ts";
 import { Channels } from "@/bot/constants/channels.ts";
 import { CustomWarningEmbed } from "@/bot/constants/embeds.ts";
 import { Roles } from "@/bot/constants/roles.ts";
-import { getOfficeAutocompleteFunc, officeCache } from "@/bot/modules/officeModule.ts";
-import { resolveGuild, } from "@/bot/utils.ts";
+import { CommandMyOffice } from "@/bot/modules/myOfficeModule.ts";
+import {
+	getOfficeAutocompleteFunc,
+	officeCache
+} from "@/bot/modules/officeModule.ts";
+import { resolveGuild } from "@/bot/utils.ts";
 import { db } from "@/db/connect";
 import { offices, users } from "@/db/schema.ts";
 import { SlashCommandGroup } from "@/lib/bot/commands/slashCommandGroup.ts";
 import { SlashSubCommand } from "@/lib/bot/commands/slashSubCommand.ts";
 import { SlashSubCommandGroup } from "@/lib/bot/commands/slashSubCommandGroup.ts";
+import { DiscordFormatting } from "@/utils/discordFormatting.ts";
 import { assert } from "@/utils/functions.ts";
 import { app } from "@";
 
@@ -33,7 +40,7 @@ function getKeyNameForUser(user: GuildMember): string {
 	return toKeyName(`${user.displayName}'s Key`);
 }
 
-function toKeyName(name: string): string {
+export function toKeyName(name: string): string {
 	return `${KEY_EMOJI} ${name}`;
 }
 
@@ -169,6 +176,12 @@ const createSubCommand = new SlashSubCommand(
 
 		// Create the office channel
 		const officeChannel = await createOfficeChannel(officeName);
+		await officeChannel.permissionOverwrites.edit(keyRole, {
+			ViewChannel: true,
+			Connect: true,
+			MoveMembers: true,
+			SetVoiceChannelStatus: true
+		});
 
 		// Update the waiting room move perms
 		await addKeyRoleToWaitingRoom(keyRole);
@@ -193,7 +206,75 @@ const createSubCommand = new SlashSubCommand(
 		await member.roles.add([keyRole, Roles.OFFICE_OWNER], "New office created");
 
 		// Send a welcome message in the office chat
-		// TODO: create welcome message
+		const myOfficeCmd = await app.discordBot.tryFindAppCommand(CommandMyOffice.name);
+
+		let keyholdersCmd = "`/my-office keyholders`";
+		let renameCmd = "`/my-office rename`";
+		let keyGrantCmd = "`/my-office key grant`";
+		let keyRevokeCmd = "`/my-office key revoke`";
+		let keyRenameCmd = "`/my-office key rename`";
+
+		if (null !== myOfficeCmd) {
+			keyholdersCmd = DiscordFormatting.SubCommand(
+				myOfficeCmd.name,
+				"keyholders",
+				myOfficeCmd.id
+			);
+
+			renameCmd = DiscordFormatting.SubCommand(
+				myOfficeCmd.name,
+				"rename",
+				myOfficeCmd.id
+			);
+
+			keyGrantCmd = DiscordFormatting.SubCommandGroup(
+				myOfficeCmd.name,
+				"key",
+				"grant",
+				myOfficeCmd.id
+			);
+
+			keyRevokeCmd = DiscordFormatting.SubCommandGroup(
+				myOfficeCmd.name,
+				"key",
+				"revoke",
+				myOfficeCmd.id
+			);
+
+			keyRenameCmd = DiscordFormatting.SubCommandGroup(
+				myOfficeCmd.name,
+				"key",
+				"rename",
+				myOfficeCmd.id
+			);
+		}
+
+		const lines = [
+			`Welcome ${DiscordFormatting.User(member)} to your new office!`,
+			"",
+			`You can use the ${keyholdersCmd} command to list the ` +
+				"keyholders for your office.",
+			`You can use the ${keyGrantCmd} and ${keyRevokeCmd} ` +
+				"commands to give and take from people your office's key.",
+			`You can use the ${renameCmd} command to rename your office's channel.`,
+			`You can use the ${keyRenameCmd} command to rename your office's key.`
+		];
+
+		assert(officeChannel.isSendable());
+		await officeChannel.send({
+			components: [
+				{
+					type: ComponentType.Container,
+					components: [
+						{
+							type: ComponentType.TextDisplay,
+							content: lines.join("\n")
+						}
+					]
+				}
+			],
+			flags: "IsComponentsV2"
+		});
 
 		// Update deferrals
 		await interaction.editReply("Office created!");

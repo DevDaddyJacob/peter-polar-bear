@@ -15,7 +15,7 @@ import type { Modal } from "@/lib/bot/modal.ts";
 import type { SelectMenu } from "@/lib/bot/selectMenus/selectMenu.ts";
 import type { Awaitable, MaybeAwaitable } from "@/utils/awaitable.ts";
 
-import { Client, Collection, } from "discord.js";
+import { Client, Collection } from "discord.js";
 import { errorReport } from "@/error/report.ts";
 import { MessageCommand } from "@/lib/bot/commands/messageCommand.ts";
 import { SingleSlashCommand } from "@/lib/bot/commands/singleSlashCommand.ts";
