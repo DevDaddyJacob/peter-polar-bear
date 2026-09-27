@@ -41,6 +41,7 @@ import {
 	onEventWaitingRoomJoin,
 	periodicOfficeWaitingRoomRefresh
 } from "@/bot/modules/officeModule.ts";
+import { periodicRoleShopRefresh, RoleShopButton } from "@/bot/modules/roleShopModule.ts";
 import { periodicRulesAndInfoRefresh } from "@/bot/modules/ruleAndInfoModule.ts";
 import { getFullCommandName, tryReplyToInteraction } from "@/bot/utils.ts";
 import { errorReport } from "@/error/report.ts";
@@ -70,6 +71,7 @@ export class PeterPolarBearBot extends BotClient {
 
 		this.addButton(GettingStartedButton);
 		this.addButton(OfficeDirectoryNavButton);
+		this.addButton(RoleShopButton);
 
 		this.addCommandInternal(CommandDev);
 		this.addCommandInternal(CommandOffice);
@@ -143,10 +145,13 @@ export class PeterPolarBearBot extends BotClient {
 
 		botLogger.debug("Updating static messages");
 
-		await periodicGettingStartedScan();
-		await periodicRulesAndInfoRefresh();
-		await periodicHoneyPotRefresh();
-		await periodicOfficeWaitingRoomRefresh();
+		await Promise.all([
+			periodicGettingStartedScan(),
+			periodicRulesAndInfoRefresh(),
+			periodicHoneyPotRefresh(),
+			periodicOfficeWaitingRoomRefresh(),
+			periodicRoleShopRefresh()
+		]);
 
 		botLogger.info("Updated static messages");
 
@@ -156,6 +161,7 @@ export class PeterPolarBearBot extends BotClient {
 		setInterval(periodicRulesAndInfoRefresh, 15 * 60 * 1000);
 		setInterval(periodicHoneyPotRefresh, 15 * 60 * 1000);
 		setInterval(periodicOfficeWaitingRoomRefresh, 15 * 60 * 1000);
+		setInterval(periodicRoleShopRefresh, 15 * 60 * 1000);
 
 		botLogger.info("Started static messages periodic updates");
 	}

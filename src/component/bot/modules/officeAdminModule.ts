@@ -18,10 +18,7 @@ import { Channels } from "@/bot/constants/channels.ts";
 import { CustomWarningEmbed } from "@/bot/constants/embeds.ts";
 import { Roles } from "@/bot/constants/roles.ts";
 import { CommandMyOffice } from "@/bot/modules/myOfficeModule.ts";
-import {
-	getOfficeAutocompleteFunc,
-	officeCache
-} from "@/bot/modules/officeModule.ts";
+import { getOfficeAutocompleteFunc, officeCache } from "@/bot/modules/officeModule.ts";
 import { resolveGuild } from "@/bot/utils.ts";
 import { db } from "@/db/connect";
 import { offices, users } from "@/db/schema.ts";
